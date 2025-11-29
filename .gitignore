@@ -1,0 +1,32 @@
+# --- NetBeans Specific ---
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+.nb-gradle/
+
+# --- Java Compiled Files ---
+*.class
+*.log
+*.ctxt
+
+# --- Package Files (Optional, jika kamu mau commit library jar hapus baris ini) ---
+# *.jar
+# *.war
+# *.nar
+# *.ear
+# *.zip
+# *.tar.gz
+# *.rar
+
+# --- Windows Junk ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Virtual Machine/IDE settings ---
+.idea/
+.vscode/
+*.iml
