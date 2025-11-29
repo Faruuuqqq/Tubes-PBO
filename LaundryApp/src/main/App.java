@@ -12,7 +12,7 @@ package main;
 import view.MainFrame;
 import javax.swing.SwingUtilities;
 
-public class Main {
+public class App {
     public static void main(String[] args) {
         // Menjalankan aplikasi (Standard Thread Safety)
         SwingUtilities.invokeLater(new Runnable() {
