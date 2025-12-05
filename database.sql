@@ -4,6 +4,7 @@ USE laundry_pbo_db;
 -- 1. Tabel Pegawai
 CREATE TABLE pegawai (
     id_pegawai INT AUTO_INCREMENT PRIMARY KEY,
+    `password` varchar(255) not null,
     nama_pegawai VARCHAR(100) NOT NULL,
     usia_pegawai INT,
     jk_pegawai ENUM('L', 'P'),
@@ -33,7 +34,7 @@ CREATE TABLE pesanan (
     id_pelanggan INT,
     id_pegawai INT,
     tgl_diterima DATETIME DEFAULT CURRENT_TIMESTAMP,
-    tgl_selesai DATETIME,
+    tgl_selesai DATETIME default null,
     total_kg DOUBLE,
     total_biaya DOUBLE,
     status ENUM('IN PROGRESS', 'SELESAI') DEFAULT 'IN PROGRESS',

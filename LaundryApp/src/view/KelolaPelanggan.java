@@ -4,7 +4,13 @@
  */
 
 package view;
-
+import config.Koneksi;
+import controller.*;
+import model.*;
+import java.sql.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
 /**
  *
  * @author Alesha Naila
@@ -12,12 +18,54 @@ package view;
 public class KelolaPelanggan extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(KelolaPelanggan.class.getName());
-
+    private Pegawai current_pegawai;
     /** Creates new form KelolaPelanggan */
     public KelolaPelanggan() {
         initComponents();
     }
-
+    
+    public KelolaPelanggan(Pegawai pegawai) {
+        initComponents();
+        this.current_pegawai = pegawai;
+        cleanFields();
+        showTablePelanggan();
+        setInitButtons();
+    }
+    
+    private void showTablePelanggan() {
+        PelangganController p = new PelangganController();
+        List<Pelanggan> list_p = p.getAllPelanggan();
+        
+         DefaultTableModel model = (DefaultTableModel) tablePelanggan.getModel();
+        for (int i = 0; i < list_p.size(); i++) {
+            Pelanggan pel = list_p.get(i);
+            model.setValueAt(pel.getId_pelanggan(), i, 0);
+            model.setValueAt(pel.getNama_pelanggan(), i, 1);
+            model.setValueAt(pel.getNo_hp_pelanggan(), i, 2);
+            model.setValueAt(pel.getAlamat_pelanggan(), i, 3);
+        }
+    }
+    
+    private void setInitButtons() {
+        txtIdPelanggan.setEnabled(false);
+        txtNamaPelanggan.setEnabled(false);
+        txtNoHp.setEnabled(false);
+        txtAreaAlamatPelanggan.setEnabled(false);
+        btnSimpanPelanggan.setEnabled(false);
+        btnResetPelanggan.setEnabled(false);
+        btnHapusPelanggan.setEnabled(true);
+        btnTambahPelanggan.setEnabled(true);
+        btnUbahPelanggan.setEnabled(true);
+             
+    }
+    
+    private void cleanFields() {
+        txtIdPelanggan.setText(null);
+        txtNamaPelanggan.setText(null);
+        txtNoHp.setText(null);
+        txtAreaAlamatPelanggan.setText(null);
+    }
+ 
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -30,7 +78,7 @@ public class KelolaPelanggan extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         lblSelamatDatang = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        menuButton = new javax.swing.JButton();
         lblIdPelanggan = new javax.swing.JLabel();
         txtIdPelanggan = new javax.swing.JTextField();
         lblNamaPelanggan = new javax.swing.JLabel();
@@ -42,12 +90,14 @@ public class KelolaPelanggan extends javax.swing.JFrame {
         txtAreaAlamatPelanggan = new javax.swing.JTextArea();
         btnSimpanPelanggan = new javax.swing.JButton();
         btnHapusPelanggan = new javax.swing.JButton();
-        btnBatalPelanggan = new javax.swing.JButton();
+        btnResetPelanggan = new javax.swing.JButton();
         tblPelanggan = new javax.swing.JScrollPane();
         tablePelanggan = new javax.swing.JTable();
         txtCariPelanggan = new javax.swing.JTextField();
         pnlCopyright = new javax.swing.JPanel();
         copyright = new javax.swing.JLabel();
+        btnUbahPelanggan = new javax.swing.JButton();
+        btnTambahPelanggan = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -62,10 +112,15 @@ public class KelolaPelanggan extends javax.swing.JFrame {
         lblSelamatDatang.setText("Pelanggan");
         lblSelamatDatang.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(240, 244, 248), 2, true));
 
-        jButton1.setBackground(new java.awt.Color(26, 75, 125));
-        jButton1.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(240, 244, 248));
-        jButton1.setText("Main Menu");
+        menuButton.setBackground(new java.awt.Color(26, 75, 125));
+        menuButton.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        menuButton.setForeground(new java.awt.Color(240, 244, 248));
+        menuButton.setText("Main Menu");
+        menuButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -73,7 +128,7 @@ public class KelolaPelanggan extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(menuButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblSelamatDatang, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(141, 141, 141))
@@ -86,7 +141,7 @@ public class KelolaPelanggan extends javax.swing.JFrame {
                 .addGap(19, 19, 19))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(menuButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -95,6 +150,12 @@ public class KelolaPelanggan extends javax.swing.JFrame {
 
         lblNamaPelanggan.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblNamaPelanggan.setText("Nama:");
+
+        txtNamaPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNamaPelangganActionPerformed(evt);
+            }
+        });
 
         lblNoHpPelanggan.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblNoHpPelanggan.setText("No. HP:");
@@ -110,16 +171,31 @@ public class KelolaPelanggan extends javax.swing.JFrame {
         btnSimpanPelanggan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnSimpanPelanggan.setForeground(new java.awt.Color(240, 244, 248));
         btnSimpanPelanggan.setText("Simpan");
+        btnSimpanPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSimpanPelangganActionPerformed(evt);
+            }
+        });
 
         btnHapusPelanggan.setBackground(new java.awt.Color(211, 47, 47));
         btnHapusPelanggan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnHapusPelanggan.setForeground(new java.awt.Color(240, 244, 248));
         btnHapusPelanggan.setText("Hapus");
+        btnHapusPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHapusPelangganActionPerformed(evt);
+            }
+        });
 
-        btnBatalPelanggan.setBackground(new java.awt.Color(90, 106, 125));
-        btnBatalPelanggan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        btnBatalPelanggan.setForeground(new java.awt.Color(240, 244, 248));
-        btnBatalPelanggan.setText("Batal");
+        btnResetPelanggan.setBackground(new java.awt.Color(90, 106, 125));
+        btnResetPelanggan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        btnResetPelanggan.setForeground(new java.awt.Color(240, 244, 248));
+        btnResetPelanggan.setText("Reset");
+        btnResetPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetPelangganActionPerformed(evt);
+            }
+        });
 
         tablePelanggan.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         tablePelanggan.setModel(new javax.swing.table.DefaultTableModel(
@@ -164,41 +240,76 @@ public class KelolaPelanggan extends javax.swing.JFrame {
                 .addComponent(copyright))
         );
 
+        btnUbahPelanggan.setBackground(new java.awt.Color(0, 102, 255));
+        btnUbahPelanggan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        btnUbahPelanggan.setForeground(new java.awt.Color(240, 244, 248));
+        btnUbahPelanggan.setText("Ubah");
+        btnUbahPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUbahPelangganActionPerformed(evt);
+            }
+        });
+
+        btnTambahPelanggan.setBackground(new java.awt.Color(0, 204, 204));
+        btnTambahPelanggan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        btnTambahPelanggan.setForeground(new java.awt.Color(240, 244, 248));
+        btnTambahPelanggan.setText("Tambah");
+        btnTambahPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTambahPelangganActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                            .addComponent(lblNamaPelanggan)
-                            .addGap(61, 61, 61)
-                            .addComponent(txtNamaPelanggan))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                            .addComponent(btnSimpanPelanggan)
-                            .addGap(18, 18, 18)
-                            .addComponent(btnHapusPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(btnBatalPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                    .addComponent(lblNoHpPelanggan)
-                                    .addGap(52, 52, 52))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(lblAlamat, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(37, 37, 37)))
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                .addComponent(txtNoHp, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE))))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(lblIdPelanggan)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtIdPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                        .addGap(30, 30, 30)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                    .addComponent(lblNamaPelanggan)
+                                    .addGap(61, 61, 61)
+                                    .addComponent(txtNamaPelanggan, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                            .addComponent(lblNoHpPelanggan)
+                                            .addGap(52, 52, 52))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(lblAlamat, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(37, 37, 37))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                            .addComponent(btnTambahPelanggan)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addGap(18, 18, 18)
+                                            .addComponent(btnUbahPelanggan))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                            .addComponent(txtNoHp, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(lblIdPelanggan)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtIdPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(106, 106, 106)
+                        .addComponent(btnResetPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnSimpanPelanggan)
+                                .addGap(35, 35, 35))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(54, 54, 54)
+                                .addComponent(btnHapusPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 72, Short.MAX_VALUE)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(tblPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtCariPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -233,9 +344,13 @@ public class KelolaPelanggan extends javax.swing.JFrame {
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnSimpanPelanggan)
+                            .addComponent(btnTambahPelanggan)
+                            .addComponent(btnUbahPelanggan)
+                            .addComponent(btnSimpanPelanggan))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnHapusPelanggan)
-                            .addComponent(btnBatalPelanggan))))
+                            .addComponent(btnResetPelanggan))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                 .addComponent(pnlCopyright, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -257,6 +372,146 @@ public class KelolaPelanggan extends javax.swing.JFrame {
     private void txtCariPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCariPelangganActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCariPelangganActionPerformed
+
+    private void menuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuButtonActionPerformed
+        // TODO add your handling code here:
+        MainMenu main_menu = new MainMenu(this.current_pegawai);
+        this.dispose();
+        main_menu.setVisible(true);
+    }//GEN-LAST:event_menuButtonActionPerformed
+
+    private void txtNamaPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNamaPelangganActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNamaPelangganActionPerformed
+
+    private void btnUbahPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahPelangganActionPerformed
+        // TODO add your handling code here:
+        int row = tablePelanggan.getSelectedRow();
+        
+        if (row == -1) {
+             JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
+        } else {
+            try {
+            txtNamaPelanggan.setEnabled(true);
+            txtNoHp.setEnabled(true);
+            txtAreaAlamatPelanggan.setEnabled(true);
+            txtIdPelanggan.setText(tablePelanggan.getValueAt(row, 0).toString());
+            txtNamaPelanggan.setText(tablePelanggan.getValueAt(row, 1).toString());
+            txtNoHp.setText(tablePelanggan.getValueAt(row, 2).toString());
+            txtAreaAlamatPelanggan.setText(tablePelanggan.getValueAt(row, 3).toString());
+            
+            btnUbahPelanggan.setEnabled(false);
+            btnTambahPelanggan.setEnabled(false);
+            btnSimpanPelanggan.setEnabled(true);
+            btnResetPelanggan.setEnabled(true);
+            btnHapusPelanggan.setEnabled(false);
+            
+            } catch(Exception e) {
+                JOptionPane.showMessageDialog(null, "Error mengambil data pelanggan untuk diubah: " + e.getMessage());
+            }
+        }
+             
+        
+    }//GEN-LAST:event_btnUbahPelangganActionPerformed
+
+    private void btnSimpanPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanPelangganActionPerformed
+        // TODO add your handling code here:
+        if (txtNamaPelanggan.getText().equalsIgnoreCase("") || txtNoHp.getText().equalsIgnoreCase("")
+           || txtAreaAlamatPelanggan.getText().equalsIgnoreCase("")) {
+            JOptionPane.showMessageDialog(null, "Semua field harus diisi!");
+        } else {
+            int id;
+            String nama, no_hp, alamat;
+            
+            if(txtIdPelanggan.getText().equalsIgnoreCase("")) {
+                nama = txtNamaPelanggan.getText();
+                no_hp = txtNoHp.getText();
+                alamat = txtAreaAlamatPelanggan.getText();
+
+                Pelanggan p = new Pelanggan(nama, no_hp, alamat);
+                PelangganController pc = new PelangganController();
+                pc.addPelanggan(p);
+
+                cleanFields();
+                setInitButtons();
+                showTablePelanggan();
+
+            } else {
+                id = Integer.parseInt(txtIdPelanggan.getText());
+                nama = txtNamaPelanggan.getText();
+                no_hp = txtNoHp.getText();
+                alamat = txtAreaAlamatPelanggan.getText();
+
+                Pelanggan p = new Pelanggan(id, nama, no_hp, alamat);
+                PelangganController pc = new PelangganController();
+                pc.updatePelanggan(p);
+
+                cleanFields();
+                setInitButtons();
+                showTablePelanggan();
+
+            }
+        }
+        
+        
+        
+    }//GEN-LAST:event_btnSimpanPelangganActionPerformed
+
+    private void btnTambahPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahPelangganActionPerformed
+        // TODO add your handling code here:
+        cleanFields();
+        btnTambahPelanggan.setEnabled(false);
+        btnUbahPelanggan.setEnabled(false);
+        btnHapusPelanggan.setEnabled(false);
+        btnResetPelanggan.setEnabled(true);
+        btnSimpanPelanggan.setEnabled(true);
+        
+        txtNamaPelanggan.setEnabled(true);
+        txtNoHp.setEnabled(true);
+        txtAreaAlamatPelanggan.setEnabled(true);
+    }//GEN-LAST:event_btnTambahPelangganActionPerformed
+
+    private void btnResetPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetPelangganActionPerformed
+        // TODO add your handling code here:
+        cleanFields();
+    }//GEN-LAST:event_btnResetPelangganActionPerformed
+
+    private void btnHapusPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusPelangganActionPerformed
+        // TODO add your handling code here:
+        int row = tablePelanggan.getSelectedRow();
+        
+        if (row == -1) {
+             JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
+        } else {
+            txtIdPelanggan.setEnabled(false);
+            txtNamaPelanggan.setEnabled(false);
+            txtNoHp.setEnabled(false);
+            txtAreaAlamatPelanggan.setEnabled(false);
+            
+            int id = Integer.parseInt(tablePelanggan.getValueAt(row, 0).toString());
+            
+            txtIdPelanggan.setText(String.valueOf(id));
+            txtNamaPelanggan.setText(tablePelanggan.getValueAt(row, 1).toString());
+            txtNoHp.setText(tablePelanggan.getValueAt(row, 2).toString());
+            txtAreaAlamatPelanggan.setText(tablePelanggan.getValueAt(row, 3).toString());
+            
+            int choice = JOptionPane.showConfirmDialog(null, "Yakin mau menghapus pelanggan dengan id = " + id + "?", "Konfirmasi Menghapus Pelanggan", JOptionPane.YES_NO_OPTION);
+            
+            if (choice == JOptionPane.YES_OPTION) {
+                
+                PelangganController p = new PelangganController();
+                p.deletePelanggan(id);
+                cleanFields();
+                setInitButtons();
+                showTablePelanggan();
+               
+            } else {
+                return;
+            }
+            
+        }
+        
+    }//GEN-LAST:event_btnHapusPelangganActionPerformed
 
     /**
      * @param args the command line arguments
@@ -284,11 +539,12 @@ public class KelolaPelanggan extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBatalPelanggan;
     private javax.swing.JButton btnHapusPelanggan;
+    private javax.swing.JButton btnResetPelanggan;
     private javax.swing.JButton btnSimpanPelanggan;
+    private javax.swing.JButton btnTambahPelanggan;
+    private javax.swing.JButton btnUbahPelanggan;
     private javax.swing.JLabel copyright;
-    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
@@ -297,6 +553,7 @@ public class KelolaPelanggan extends javax.swing.JFrame {
     private javax.swing.JLabel lblNamaPelanggan;
     private javax.swing.JLabel lblNoHpPelanggan;
     private javax.swing.JLabel lblSelamatDatang;
+    private javax.swing.JButton menuButton;
     private javax.swing.JPanel pnlCopyright;
     private javax.swing.JTable tablePelanggan;
     private javax.swing.JScrollPane tblPelanggan;

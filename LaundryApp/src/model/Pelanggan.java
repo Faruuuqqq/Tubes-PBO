@@ -24,6 +24,11 @@ public class Pelanggan {
         this.alamat_pelanggan = alamat;
     }
 
+    public Pelanggan(String nama, String hp, String alamat) {
+        this.nama_pelanggan = nama;
+        this.no_hp_pelanggan = hp;
+        this.alamat_pelanggan = alamat;
+    }
     // Getter Setter
     public int getId_pelanggan() { return id_pelanggan; }
     public void setId_pelanggan(int id_pelanggan) { this.id_pelanggan = id_pelanggan; }

@@ -3,6 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
+import config.Koneksi;
+import controller.*;
+import model.*;
+import java.sql.*;
+import javax.swing.*;
 
 /**
  *
@@ -11,12 +16,17 @@ package view;
 public class PesananBaru extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PesananBaru.class.getName());
-
+    private Pegawai current_pegawai;
     /**
      * Creates new form PesananBaru
      */
     public PesananBaru() {
         initComponents();
+    }
+    
+    public PesananBaru(Pegawai pegawai) {
+        initComponents();
+        this.current_pegawai = pegawai;
     }
 
     /**
@@ -38,11 +48,11 @@ public class PesananBaru extends javax.swing.JFrame {
         lblIdPesanan = new javax.swing.JLabel();
         txtIdPesanan = new javax.swing.JTextField();
         lblTglDiterima = new javax.swing.JLabel();
-        txtTglDiterima = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         comboBoxPelanggan = new javax.swing.JComboBox<>();
         comboBoxPegawai = new javax.swing.JComboBox<>();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblDetailItem = new javax.swing.JTable();
@@ -144,6 +154,8 @@ public class PesananBaru extends javax.swing.JFrame {
 
         comboBoxPegawai.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pegawai" }));
 
+        jDateChooser1.setDateFormatString("yyyy-MM-dd hh:mm:ss");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -157,11 +169,15 @@ public class PesananBaru extends javax.swing.JFrame {
                     .addComponent(lblIdPesanan))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtIdPesanan)
-                    .addComponent(txtTglDiterima)
-                    .addComponent(comboBoxPelanggan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(comboBoxPegawai, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(15, 15, 15))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtIdPesanan)
+                            .addComponent(comboBoxPelanggan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(comboBoxPegawai, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(15, 15, 15))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -171,10 +187,10 @@ public class PesananBaru extends javax.swing.JFrame {
                     .addComponent(lblIdPesanan)
                     .addComponent(txtIdPesanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblTglDiterima)
-                    .addComponent(txtTglDiterima, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
+                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(9, 9, 9)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(comboBoxPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -403,6 +419,7 @@ public class PesananBaru extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboBoxPelanggan;
     private javax.swing.JLabel copyright;
     private javax.swing.JButton jButton1;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -424,7 +441,6 @@ public class PesananBaru extends javax.swing.JFrame {
     private javax.swing.JTextField txtBeratItem;
     private javax.swing.JTextField txtHargaItem;
     private javax.swing.JTextField txtIdPesanan;
-    private javax.swing.JTextField txtTglDiterima;
     private javax.swing.JTextField txtTotalBerat;
     private javax.swing.JTextField txtTotalBiaya;
     // End of variables declaration//GEN-END:variables

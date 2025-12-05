@@ -9,10 +9,11 @@ package model;
  * @author Faruq
  */
 
-import java.sql.Date; 
+import java.util.Date; 
 
 public class Pegawai {
     private int id_pegawai;
+    private String password;
     private String nama_pegawai;
     private int usia_pegawai;
     private String jk_pegawai; // 'L' atau 'P'
@@ -24,8 +25,19 @@ public class Pegawai {
     public Pegawai() {}
 
     // Constructor isi
-    public Pegawai(int id, String nama, int usia, String jk, String hp, String alamat, Date tgl) {
+    public Pegawai(int id, String password, String nama, int usia, String jk, String hp, String alamat, Date tgl) {
         this.id_pegawai = id;
+        this.password = password;
+        this.nama_pegawai = nama;
+        this.usia_pegawai = usia;
+        this.jk_pegawai = jk;
+        this.no_hp_pegawai = hp;
+        this.alamat_pegawai = alamat;
+        this.start_date = tgl;
+    }
+    
+    public Pegawai(String password, String nama, int usia, String jk, String hp, String alamat, Date tgl) {
+        this.password = password;
         this.nama_pegawai = nama;
         this.usia_pegawai = usia;
         this.jk_pegawai = jk;
@@ -37,6 +49,9 @@ public class Pegawai {
     public int getId_pegawai() { return id_pegawai; }
     public void setId_pegawai(int id_pegawai) { this.id_pegawai = id_pegawai; }
 
+    public String getPassword_pegawai() { return password; }
+    public void setPassword_pegawai(String password) { this.password = password; }
+    
     public String getNama_pegawai() { return nama_pegawai; }
     public void setNama_pegawai(String nama_pegawai) { this.nama_pegawai = nama_pegawai; }
 

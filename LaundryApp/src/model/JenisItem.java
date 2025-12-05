@@ -20,6 +20,11 @@ public class JenisItem {
         this.nama_item = nama;
         this.harga_per_kg = harga;
     }
+    
+    public JenisItem(String nama, double harga) {
+        this.nama_item = nama;
+        this.harga_per_kg = harga;
+    }
 
     // Getter Setter
     public int getId_jenis_item() { return id_jenis_item; }

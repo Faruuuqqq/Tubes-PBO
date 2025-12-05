@@ -30,3 +30,4 @@ $RECYCLE.BIN/
 .idea/
 .vscode/
 *.iml
+/LaundryApp/build/

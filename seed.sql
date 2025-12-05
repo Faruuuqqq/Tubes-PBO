@@ -3,13 +3,13 @@ USE laundry_pbo_db;
 -- ==========================================
 -- 1. Seed Data Pegawai
 -- ==========================================
-INSERT INTO pegawai (nama_pegawai, usia_pegawai, jk_pegawai, no_hp_pegawai, alamat_pegawai, start_date) VALUES 
-('Budi Santoso', 30, 'L', '081234567890', 'Jl. Merpati No. 10, Jakarta', '2023-01-15'),
-('Siti Aminah', 25, 'P', '085678901234', 'Jl. Kenanga No. 5, Bekasi', '2023-03-01'),
-('Rudi Hermawan', 28, 'L', '081345678901', 'Jl. Melati No. 3, Depok', '2023-06-10'),
-('Joko Anwar', 35, 'L', '081299887766', 'Jl. Bioskop No. 21, Jakarta', '2022-12-01'),
-('Luna Maya', 32, 'P', '081311223344', 'Jl. Bintang No. 2, Bali', '2023-02-20'),
-('Deddy Corbuzier', 40, 'L', '081233445566', 'Jl. Podcast No. 1, Jakarta', '2023-05-05');
+INSERT INTO pegawai (nama_pegawai, `password`, usia_pegawai, jk_pegawai, no_hp_pegawai, alamat_pegawai, start_date) VALUES 
+('Budi Santoso', 'admin1', 30, 'L', '081234567890', 'Jl. Merpati No. 10, Jakarta', '2023-01-15'),
+('Siti Aminah', 'admin2' 25, 'P', '085678901234', 'Jl. Kenanga No. 5, Bekasi', '2023-03-01'),
+('Rudi Hermawan', 'admin3', 28, 'L', '081345678901', 'Jl. Melati No. 3, Depok', '2023-06-10'),
+('Joko Anwar', 'admin4', 35, 'L', '081299887766', 'Jl. Bioskop No. 21, Jakarta', '2022-12-01'),
+('Luna Maya', 'admin5', 32, 'P', '081311223344', 'Jl. Bintang No. 2, Bali', '2023-02-20'),
+('Deddy Corbuzier', 'admin6', 40, 'L', '081233445566', 'Jl. Podcast No. 1, Jakarta', '2023-05-05');
 
 -- ==========================================
 -- 2. Seed Data Pelanggan

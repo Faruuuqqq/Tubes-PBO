@@ -9,7 +9,7 @@ package main;
  * @author Faruq
  */
 
-import view.MainFrame;
+import view.Login;
 import javax.swing.SwingUtilities;
 
 public class App {
@@ -19,7 +19,7 @@ public class App {
             @Override
             public void run() {
                 // Membuat objek jendela utama
-                MainFrame frame = new MainFrame();
+                Login frame = new Login();
                 
                 // Menampilkan jendela
                 frame.setVisible(true);

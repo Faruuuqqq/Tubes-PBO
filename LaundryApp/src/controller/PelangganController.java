@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class PelangganController {
     
@@ -45,6 +46,7 @@ public class PelangganController {
             }
         } catch (SQLException e) {
             Logger.getLogger(PelangganController.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(null, "Error dalam mengambil data semua pelanggan: " + e.getMessage());
         }
         return listPelanggan;
     }
@@ -62,6 +64,7 @@ public class PelangganController {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             Logger.getLogger(PelangganController.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(null, "Error menambahkan data pelanggan baru: " + e.getMessage());
             return false;
         }
     }
@@ -80,6 +83,7 @@ public class PelangganController {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             Logger.getLogger(PelangganController.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(null, "Error meng-update data pelanggan: " + e.getMessage());
             return false;
         }
     }
@@ -95,6 +99,7 @@ public class PelangganController {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             Logger.getLogger(PelangganController.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(null, "Error dalam menghapus pelanggan: " + e.getMessage());
             return false;
         }
     }

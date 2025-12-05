@@ -4,6 +4,16 @@
  */
 
 package view;
+import config.Koneksi;
+import controller.*;
+import model.*;
+import java.sql.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import com.toedter.calendar.JDateChooser;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  *
@@ -12,11 +22,68 @@ package view;
 public class KelolaPegawai extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(KelolaPelanggan.class.getName());
-
+    private Pegawai current_pegawai;
     /** Creates new form KelolaPelanggan */
     public KelolaPegawai() {
         initComponents();
     }
+    
+    public KelolaPegawai(Pegawai pegawai) {
+        initComponents();
+        this.current_pegawai = pegawai;
+        resetComponents();
+        showTablePegawai();
+        setInitButtons();
+    }
+    
+    private void showTablePegawai() {
+        
+        PegawaiController p = new PegawaiController();
+        List<Pegawai> list_p = p.getAllPegawai();
+        
+         DefaultTableModel model = (DefaultTableModel) tablePegawai.getModel();
+        for (int i = 0; i < list_p.size(); i++) {
+            Pegawai peg = list_p.get(i);
+            model.setValueAt(peg.getId_pegawai(), i, 0);
+            model.setValueAt(peg.getPassword_pegawai(), i, 1);
+            model.setValueAt(peg.getNama_pegawai(), i, 2);
+            model.setValueAt(peg.getUsia_pegawai(), i, 3);
+            model.setValueAt(peg.getJk_pegawai(), i, 4);
+            model.setValueAt(peg.getNo_hp_pegawai(), i, 5);
+            model.setValueAt(peg.getAlamat_pegawai(), i, 6);
+            model.setValueAt(peg.getStart_date(), i, 7);
+        }
+        
+    }
+        
+        private void setInitButtons() {
+            id.setEnabled(false);
+            password.setEnabled(false);
+            nama.setEnabled(false);
+            usia.setEnabled(false);
+            jk.setEnabled(false);
+            noHp.setEnabled(false);
+            alamat.setEnabled(false);
+            mulai.setEnabled(false);
+            
+            simpan.setEnabled(false);
+            reset.setEnabled(false);
+            hapus.setEnabled(true);
+            tambah.setEnabled(true);
+            ubah.setEnabled(true);        
+    }
+        
+        private void resetComponents() {
+            id.setText(null);
+            password.setText(null);
+            nama.setText(null);
+            usia.setText(null);
+            jk.setSelectedIndex(0);
+            noHp.setText(null);
+            alamat.setText(null);
+            Date current_date = new Date();
+            mulai.setDate(current_date);
+        }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -30,32 +97,37 @@ public class KelolaPegawai extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         lblPegawai = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        menu = new javax.swing.JButton();
         lblIdPegawai = new javax.swing.JLabel();
-        txtIdPegawai = new javax.swing.JTextField();
+        id = new javax.swing.JTextField();
         lblNamaPegawai = new javax.swing.JLabel();
-        txtNamaPegawai = new javax.swing.JTextField();
+        nama = new javax.swing.JTextField();
         lblNoHpPegawai = new javax.swing.JLabel();
-        txtNoHpPegawai = new javax.swing.JTextField();
+        noHp = new javax.swing.JTextField();
         lblAlamatPegawai = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        txtAreaAlamatPegawai = new javax.swing.JTextArea();
-        btnSimpanPegawai = new javax.swing.JButton();
-        btnHapusPegawai = new javax.swing.JButton();
-        btnBatalPegawai = new javax.swing.JButton();
+        alamat = new javax.swing.JTextArea();
+        simpan = new javax.swing.JButton();
+        hapus = new javax.swing.JButton();
+        reset = new javax.swing.JButton();
         tblPegawai = new javax.swing.JScrollPane();
         tablePegawai = new javax.swing.JTable();
         txtCariPelanggan = new javax.swing.JTextField();
         pnlCopyright = new javax.swing.JPanel();
         copyright = new javax.swing.JLabel();
         lblUsiaPegawai = new javax.swing.JLabel();
-        txtUsiaPegawai = new javax.swing.JTextField();
+        usia = new javax.swing.JTextField();
         lblJenisKelamin = new javax.swing.JLabel();
-        comboBoxJenisKelamin = new javax.swing.JComboBox<>();
+        jk = new javax.swing.JComboBox<>();
         lblNoHpPegawai1 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
+        lblNamaPegawai1 = new javax.swing.JLabel();
+        password = new javax.swing.JTextField();
+        tambah = new javax.swing.JButton();
+        ubah = new javax.swing.JButton();
+        mulai = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(240, 244, 248));
 
@@ -68,10 +140,15 @@ public class KelolaPegawai extends javax.swing.JFrame {
         lblPegawai.setText("Pegawai");
         lblPegawai.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(240, 244, 248), 2, true));
 
-        jButton1.setBackground(new java.awt.Color(26, 75, 125));
-        jButton1.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(240, 244, 248));
-        jButton1.setText("Main Menu");
+        menu.setBackground(new java.awt.Color(26, 75, 125));
+        menu.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        menu.setForeground(new java.awt.Color(240, 244, 248));
+        menu.setText("Main Menu");
+        menu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -79,7 +156,7 @@ public class KelolaPegawai extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(menu)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(141, 141, 141))
@@ -92,7 +169,7 @@ public class KelolaPegawai extends javax.swing.JFrame {
                 .addGap(19, 19, 19))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(menu)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -100,7 +177,7 @@ public class KelolaPegawai extends javax.swing.JFrame {
         lblIdPegawai.setText("ID Pegawai:");
 
         lblNamaPegawai.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        lblNamaPegawai.setText("Nama:");
+        lblNamaPegawai.setText("Password: ");
 
         lblNoHpPegawai.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblNoHpPegawai.setText("No. HP:");
@@ -108,35 +185,50 @@ public class KelolaPegawai extends javax.swing.JFrame {
         lblAlamatPegawai.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblAlamatPegawai.setText("Alamat:");
 
-        txtAreaAlamatPegawai.setColumns(20);
-        txtAreaAlamatPegawai.setRows(5);
-        jScrollPane1.setViewportView(txtAreaAlamatPegawai);
+        alamat.setColumns(20);
+        alamat.setRows(5);
+        jScrollPane1.setViewportView(alamat);
 
-        btnSimpanPegawai.setBackground(new java.awt.Color(76, 175, 80));
-        btnSimpanPegawai.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        btnSimpanPegawai.setForeground(new java.awt.Color(240, 244, 248));
-        btnSimpanPegawai.setText("Simpan");
+        simpan.setBackground(new java.awt.Color(76, 175, 80));
+        simpan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        simpan.setForeground(new java.awt.Color(240, 244, 248));
+        simpan.setText("Simpan");
+        simpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                simpanActionPerformed(evt);
+            }
+        });
 
-        btnHapusPegawai.setBackground(new java.awt.Color(211, 47, 47));
-        btnHapusPegawai.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        btnHapusPegawai.setForeground(new java.awt.Color(240, 244, 248));
-        btnHapusPegawai.setText("Hapus");
+        hapus.setBackground(new java.awt.Color(211, 47, 47));
+        hapus.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        hapus.setForeground(new java.awt.Color(240, 244, 248));
+        hapus.setText("Hapus");
+        hapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hapusActionPerformed(evt);
+            }
+        });
 
-        btnBatalPegawai.setBackground(new java.awt.Color(90, 106, 125));
-        btnBatalPegawai.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        btnBatalPegawai.setForeground(new java.awt.Color(240, 244, 248));
-        btnBatalPegawai.setText("Batal");
+        reset.setBackground(new java.awt.Color(90, 106, 125));
+        reset.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        reset.setForeground(new java.awt.Color(240, 244, 248));
+        reset.setText("Reset");
+        reset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetActionPerformed(evt);
+            }
+        });
 
         tablePegawai.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         tablePegawai.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nama", "Usia", "Kelamin", "No. HP", "Alamat", "Tgl. Mulai"
+                "ID", "Password", "Nama", "Usia", "Kelamin", "No. HP", "Alamat", "Tgl. Mulai"
             }
         ));
         tblPegawai.setViewportView(tablePegawai);
@@ -173,17 +265,50 @@ public class KelolaPegawai extends javax.swing.JFrame {
         lblUsiaPegawai.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblUsiaPegawai.setText("Usia:");
 
+        usia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usiaActionPerformed(evt);
+            }
+        });
+        usia.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                usiaKeyTyped(evt);
+            }
+        });
+
         lblJenisKelamin.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblJenisKelamin.setText("Jenis Kelamin:");
 
-        comboBoxJenisKelamin.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
-        comboBoxJenisKelamin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Kelamin:", "Laki-laki", "Perempuan" }));
+        jk.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        jk.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Laki-laki", "Perempuan" }));
 
         lblNoHpPegawai1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblNoHpPegawai1.setText("Tgl. Mulai:");
 
-        jSpinner1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jSpinner1.setModel(new javax.swing.SpinnerDateModel());
+        lblNamaPegawai1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        lblNamaPegawai1.setText("Nama:");
+
+        tambah.setBackground(new java.awt.Color(0, 204, 204));
+        tambah.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        tambah.setForeground(new java.awt.Color(240, 244, 248));
+        tambah.setText("Tambah");
+        tambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tambahActionPerformed(evt);
+            }
+        });
+
+        ubah.setBackground(new java.awt.Color(0, 102, 255));
+        ubah.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        ubah.setForeground(new java.awt.Color(240, 244, 248));
+        ubah.setText("Ubah");
+        ubah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ubahActionPerformed(evt);
+            }
+        });
+
+        mulai.setDateFormatString("yyyy-MM-dd");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -192,111 +317,111 @@ public class KelolaPegawai extends javax.swing.JFrame {
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(pnlCopyright, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addGap(471, 471, 471)
+                .addComponent(reset, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnSimpanPegawai)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnHapusPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnBatalPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(lblNoHpPegawai1)
-                                .addGap(123, 123, 123)
-                                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(lblNamaPegawai)
-                                .addGap(50, 50, 50)
-                                .addComponent(txtNamaPegawai))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(lblIdPegawai)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtIdPegawai))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblUsiaPegawai)
-                                    .addComponent(lblJenisKelamin)
-                                    .addComponent(lblNoHpPegawai)
-                                    .addComponent(lblAlamatPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtNoHpPegawai)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                        .addGap(4, 4, 4)
-                                        .addComponent(txtUsiaPegawai))
-                                    .addComponent(comboBoxJenisKelamin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                            .addComponent(lblIdPegawai)
+                            .addComponent(lblNamaPegawai, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblNamaPegawai1, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtCariPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(tblPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(38, 38, 38))))
+                            .addComponent(id, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(password, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(nama, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(usia, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(63, 63, 63))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(tambah)
+                                .addGap(27, 27, 27)
+                                .addComponent(ubah)
+                                .addGap(18, 18, 18)
+                                .addComponent(simpan)
+                                .addGap(42, 42, 42)
+                                .addComponent(hapus, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(103, 103, 103)
+                                .addComponent(noHp, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(2, 2, 2)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblJenisKelamin)
+                                    .addComponent(lblAlamatPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblUsiaPegawai)
+                                    .addComponent(lblNoHpPegawai)
+                                    .addComponent(lblNoHpPegawai1))
+                                .addGap(21, 21, 21)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(mulai, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtCariPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tblPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtCariPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(65, 65, 65)
                         .addComponent(tblPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblIdPegawai)
-                            .addComponent(txtIdPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(21, 21, 21)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblNamaPegawai)
-                            .addComponent(txtNamaPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(21, 21, 21)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblUsiaPegawai)
-                            .addComponent(txtUsiaPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(21, 21, 21)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblJenisKelamin)
-                            .addComponent(comboBoxJenisKelamin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtCariPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lblIdPegawai))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtNoHpPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblNamaPegawai))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(nama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblNamaPegawai1))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(usia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblUsiaPegawai))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblJenisKelamin)
+                            .addComponent(jk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(noHp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblNoHpPegawai))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblAlamatPegawai)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblNoHpPegawai1)
-                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblAlamatPegawai))))
                 .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(mulai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblNoHpPegawai1))
+                .addGap(84, 84, 84)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSimpanPegawai)
-                    .addComponent(btnHapusPegawai)
-                    .addComponent(btnBatalPegawai))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+                    .addComponent(simpan)
+                    .addComponent(hapus)
+                    .addComponent(reset)
+                    .addComponent(tambah)
+                    .addComponent(ubah))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                 .addComponent(pnlCopyright, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 6, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -304,6 +429,219 @@ public class KelolaPegawai extends javax.swing.JFrame {
     private void txtCariPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCariPelangganActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCariPelangganActionPerformed
+
+    private void menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuActionPerformed
+        // TODO add your handling code here:
+        MainMenu main_menu = new MainMenu(this.current_pegawai);
+        this.dispose();
+        main_menu.setVisible(true);
+    }//GEN-LAST:event_menuActionPerformed
+
+    private void tambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambahActionPerformed
+        // TODO add your handling code here:
+        resetComponents();
+        tambah.setEnabled(false);
+        ubah.setEnabled(false);
+        hapus.setEnabled(false);
+        reset.setEnabled(true);
+        simpan.setEnabled(true);
+
+        password.setEnabled(true);
+        nama.setEnabled(true);
+        usia.setEnabled(true);
+        jk.setEnabled(true);
+        noHp.setEnabled(true);
+        alamat.setEnabled(true);
+        mulai.setEnabled(true);
+    }//GEN-LAST:event_tambahActionPerformed
+
+    private void ubahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ubahActionPerformed
+        // TODO add your handling code here:
+        int row = tablePegawai.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
+        } else {
+            try {
+                
+                password.setEnabled(true);
+                nama.setEnabled(true);
+                usia.setEnabled(true);
+                jk.setEnabled(true);
+                noHp.setEnabled(true);
+                alamat.setEnabled(true);
+                mulai.setEnabled(true);
+                
+                
+                
+                id.setText(tablePegawai.getValueAt(row, 0).toString());
+                password.setText(tablePegawai.getValueAt(row, 1).toString());
+                nama.setText(tablePegawai.getValueAt(row, 2).toString());
+                usia.setText(tablePegawai.getValueAt(row, 3).toString());
+                
+                if(tablePegawai.getValueAt(row, 4).toString().equalsIgnoreCase("L")) {
+                    jk.setSelectedIndex(0);
+                } else {
+                    jk.setSelectedIndex(1);
+                }
+                
+                noHp.setText(tablePegawai.getValueAt(row, 5).toString());
+                alamat.setText(tablePegawai.getValueAt(row, 6).toString());
+                String tgl_mulai = (String) tablePegawai.getValueAt(row, 7);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                
+                try {
+                   Date date = sdf.parse(tgl_mulai);
+                    mulai.setDate(date); 
+                } catch(Exception e) {
+                    JOptionPane.showMessageDialog(null, "Error mem-parsing tanggal mulai: " + e.getMessage());
+                }
+                
+
+                ubah.setEnabled(false);
+                tambah.setEnabled(false);
+                simpan.setEnabled(true);
+                reset.setEnabled(true);
+                hapus.setEnabled(false);
+
+            } catch(Exception e) {
+                JOptionPane.showMessageDialog(null, "Error mengambil data pegawai untuk diubah: " + e.getMessage());
+            }
+        }
+
+    }//GEN-LAST:event_ubahActionPerformed
+
+    private void resetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetActionPerformed
+        // TODO add your handling code here:
+        resetComponents();
+    }//GEN-LAST:event_resetActionPerformed
+
+    private void hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hapusActionPerformed
+        // TODO add your handling code here:
+        int row = tablePegawai.getSelectedRow();
+        
+        if (row == -1) {
+             JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
+        } else {
+                id.setEnabled(false);
+                password.setEnabled(false);
+                nama.setEnabled(false);
+                usia.setEnabled(false);
+                jk.setEnabled(false);
+                noHp.setEnabled(false);
+                alamat.setEnabled(false);
+                mulai.setEnabled(false);
+                int id_p = Integer.parseInt(tablePegawai.getValueAt(row, 0).toString());
+
+                id.setText(tablePegawai.getValueAt(row, 0).toString());
+                password.setText(tablePegawai.getValueAt(row, 1).toString());
+                nama.setText(tablePegawai.getValueAt(row, 2).toString());
+                usia.setText(tablePegawai.getValueAt(row, 3).toString());
+
+                if(tablePegawai.getValueAt(row, 4).toString().equalsIgnoreCase("L")) {
+                        jk.setSelectedIndex(0);
+                } else {
+                    jk.setSelectedIndex(1);
+                }
+
+                noHp.setText(tablePegawai.getValueAt(row, 5).toString());
+                alamat.setText(tablePegawai.getValueAt(row, 6).toString());
+                String tgl_mulai = (String) tablePegawai.getValueAt(row, 7);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                int choice = JOptionPane.showConfirmDialog(null, "Yakin mau menghapus pegawai dengan id = " + id_p + "?", "Konfirmasi Menghapus Pelanggan", JOptionPane.YES_NO_OPTION);
+
+                if (choice == JOptionPane.YES_OPTION) {
+                    PegawaiController pc = new PegawaiController();
+                    pc.deletePegawai(id_p);
+                } else {
+                    return;
+                }
+            
+            }  
+            
+            
+        
+    }//GEN-LAST:event_hapusActionPerformed
+
+    private void simpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanActionPerformed
+        // TODO add your handling code here:
+        
+        if (password.getText().equalsIgnoreCase("") || nama.getText().equalsIgnoreCase("")
+           || usia.getText().equalsIgnoreCase("") || noHp.getText().equalsIgnoreCase("") 
+           || alamat.getText().equalsIgnoreCase("")) {
+            JOptionPane.showMessageDialog(null, "Semua field harus diisi!");
+        } else {
+            int id_p;
+            String password_p, nama_p;
+            int usia_p;
+            String jk_p, no_hp_p, alamat_p;
+            Date mulai_p;
+
+            if(id.getText().equalsIgnoreCase("")) {
+                password_p = password.getText();
+                nama_p = nama.getText();
+                usia_p = Integer.parseInt(usia.getText());
+
+                if (jk.getSelectedIndex() == 0) {
+                    jk_p = "L";
+                } else {
+                    jk_p = "P";
+                }
+                no_hp_p = noHp.getText();
+                alamat_p = alamat.getText();
+                mulai_p = mulai.getDate();
+
+                Pegawai p = new Pegawai(password_p, nama_p, usia_p, jk_p, no_hp_p, alamat_p, mulai_p);
+                PegawaiController pc = new PegawaiController();
+                pc.addPegawai(p);
+
+                resetComponents();
+                setInitButtons();
+                showTablePegawai();
+
+            } else {
+                    id_p = Integer.parseInt(id.getText());
+                    password_p = password.getText();
+                    nama_p = nama.getText();
+                    usia_p = Integer.parseInt(usia.getText());
+
+                    if (jk.getSelectedIndex() == 0) {
+                        jk_p = "L";
+                    } else {
+                        jk_p = "P";
+                    }
+
+                    no_hp_p = noHp.getText();
+                    alamat_p = alamat.getText();
+                    mulai_p = mulai.getDate();
+
+                    Pegawai p = new Pegawai(password_p, nama_p, usia_p, jk_p, no_hp_p, alamat_p, mulai_p);
+                    PegawaiController pc = new PegawaiController();
+                    pc.updatePegawai(p);
+
+
+                    resetComponents();
+                    setInitButtons();
+                    showTablePegawai();
+
+                }
+            }
+        
+        
+    }//GEN-LAST:event_simpanActionPerformed
+
+    private void usiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usiaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_usiaActionPerformed
+
+    private void usiaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usiaKeyTyped
+        // TODO add your handling code here:
+        if(!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+            JOptionPane.showMessageDialog(null, "Field usia hanya boleh diisi oleh angka!");
+        }
+    }//GEN-LAST:event_usiaKeyTyped
 
     /**
      * @param args the command line arguments
@@ -331,33 +669,37 @@ public class KelolaPegawai extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBatalPegawai;
-    private javax.swing.JButton btnHapusPegawai;
-    private javax.swing.JButton btnSimpanPegawai;
-    private javax.swing.JComboBox<String> comboBoxJenisKelamin;
+    private javax.swing.JTextArea alamat;
     private javax.swing.JLabel copyright;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton hapus;
+    private javax.swing.JTextField id;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JComboBox<String> jk;
     private javax.swing.JLabel lblAlamatPegawai;
     private javax.swing.JLabel lblIdPegawai;
     private javax.swing.JLabel lblJenisKelamin;
     private javax.swing.JLabel lblNamaPegawai;
+    private javax.swing.JLabel lblNamaPegawai1;
     private javax.swing.JLabel lblNoHpPegawai;
     private javax.swing.JLabel lblNoHpPegawai1;
     private javax.swing.JLabel lblPegawai;
     private javax.swing.JLabel lblUsiaPegawai;
+    private javax.swing.JButton menu;
+    private com.toedter.calendar.JDateChooser mulai;
+    private javax.swing.JTextField nama;
+    private javax.swing.JTextField noHp;
+    private javax.swing.JTextField password;
     private javax.swing.JPanel pnlCopyright;
+    private javax.swing.JButton reset;
+    private javax.swing.JButton simpan;
     private javax.swing.JTable tablePegawai;
+    private javax.swing.JButton tambah;
     private javax.swing.JScrollPane tblPegawai;
-    private javax.swing.JTextArea txtAreaAlamatPegawai;
     private javax.swing.JTextField txtCariPelanggan;
-    private javax.swing.JTextField txtIdPegawai;
-    private javax.swing.JTextField txtNamaPegawai;
-    private javax.swing.JTextField txtNoHpPegawai;
-    private javax.swing.JTextField txtUsiaPegawai;
+    private javax.swing.JButton ubah;
+    private javax.swing.JTextField usia;
     // End of variables declaration//GEN-END:variables
 
 }

@@ -3,6 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
+import config.Koneksi;
+import controller.*;
+import model.*;
+import java.sql.*;
+import javax.swing.*;
 
 /**
  *
@@ -11,12 +16,18 @@ package view;
 public class MainMenu extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainMenu.class.getName());
-
+    private Pegawai current_pegawai;
     /**
      * Creates new form MainMenu
      */
     public MainMenu() {
         initComponents();
+    }
+    
+    public MainMenu(Pegawai pegawai) {
+        initComponents();
+        this.current_pegawai = pegawai;
+        lblSelamatDatang.setText("Selamat Datang, " + current_pegawai.getNama_pegawai() + "!");
     }
 
     /**
@@ -77,14 +88,29 @@ public class MainMenu extends javax.swing.JFrame {
         btnPelanggan.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         btnPelanggan.setForeground(new java.awt.Color(26, 75, 125));
         btnPelanggan.setText("Kelola Pelanggan");
+        btnPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPelangganActionPerformed(evt);
+            }
+        });
 
         btnJenisItem.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         btnJenisItem.setForeground(new java.awt.Color(26, 75, 125));
         btnJenisItem.setText("Kelola Item");
+        btnJenisItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnJenisItemActionPerformed(evt);
+            }
+        });
 
         btnPegawai.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         btnPegawai.setForeground(new java.awt.Color(26, 75, 125));
         btnPegawai.setText("Kelola Pegawai");
+        btnPegawai.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPegawaiActionPerformed(evt);
+            }
+        });
 
         btnPesananBaru.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         btnPesananBaru.setForeground(new java.awt.Color(26, 75, 125));
@@ -108,6 +134,11 @@ public class MainMenu extends javax.swing.JFrame {
         btnLogout.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
         btnLogout.setForeground(new java.awt.Color(240, 244, 248));
         btnLogout.setText("Logout");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -205,11 +236,45 @@ public class MainMenu extends javax.swing.JFrame {
 
     private void btnPesananBaruActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesananBaruActionPerformed
         // TODO add your handling code here:
+        PesananBaru pesanan_baru = new PesananBaru(current_pegawai);
+        this.dispose();
+        pesanan_baru.setVisible(true);
     }//GEN-LAST:event_btnPesananBaruActionPerformed
 
     private void btnDaftarPesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDaftarPesananActionPerformed
         // TODO add your handling code here:
+        DaftarPesanan daftar_pesanan = new DaftarPesanan(current_pegawai);
+        this.dispose();
+        daftar_pesanan.setVisible(true);
     }//GEN-LAST:event_btnDaftarPesananActionPerformed
+
+    private void btnPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPelangganActionPerformed
+        // TODO add your handling code here:
+        KelolaPelanggan kelola_pelanggan = new KelolaPelanggan(current_pegawai);
+        this.dispose();
+        kelola_pelanggan.setVisible(true);
+    }//GEN-LAST:event_btnPelangganActionPerformed
+
+    private void btnJenisItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJenisItemActionPerformed
+        // TODO add your handling code here:
+        KelolaJenisItem kelola_item = new KelolaJenisItem(current_pegawai);
+        this.dispose();
+        kelola_item.setVisible(true);
+    }//GEN-LAST:event_btnJenisItemActionPerformed
+
+    private void btnPegawaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPegawaiActionPerformed
+        // TODO add your handling code here:
+        KelolaPegawai kelola_pegawai = new KelolaPegawai(current_pegawai);
+        this.dispose();
+        kelola_pegawai.setVisible(true);
+    }//GEN-LAST:event_btnPegawaiActionPerformed
+
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        // TODO add your handling code here:
+        Login login = new Login();
+        this.dispose();
+        login.setVisible(true);
+    }//GEN-LAST:event_btnLogoutActionPerformed
 
     /**
      * @param args the command line arguments

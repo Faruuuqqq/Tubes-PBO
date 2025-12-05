@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class PegawaiController {
     
@@ -39,6 +40,7 @@ public class PegawaiController {
             while (rs.next()) {
                 Pegawai p = new Pegawai();
                 p.setId_pegawai(rs.getInt("id_pegawai"));
+                p.setPassword_pegawai(rs.getString("password"));
                 p.setNama_pegawai(rs.getString("nama_pegawai"));
                 p.setUsia_pegawai(rs.getInt("usia_pegawai"));
                 p.setJk_pegawai(rs.getString("jk_pegawai"));
@@ -50,6 +52,7 @@ public class PegawaiController {
             }
         } catch (SQLException e) {
             Logger.getLogger(PegawaiController.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(null, "Error dalam mengambil data semua pegawai: " + e.getMessage());
         }
         return listPegawai;
     }
@@ -62,38 +65,49 @@ public class PegawaiController {
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, p.getNama_pegawai());
-            ps.setInt(2, p.getUsia_pegawai());
-            ps.setString(3, p.getJk_pegawai());
-            ps.setString(4, p.getNo_hp_pegawai());
-            ps.setString(5, p.getAlamat_pegawai());
-            ps.setDate(6, p.getStart_date());
+            ps.setString(2, p.getPassword_pegawai());
+            ps.setInt(3, p.getUsia_pegawai());
+            ps.setString(4, p.getJk_pegawai());
+            ps.setString(5, p.getNo_hp_pegawai());
+            ps.setString(6, p.getAlamat_pegawai());
+            
+            java.util.Date utilDate = p.getStart_date();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+            ps.setDate(7, sqlDate);
             
             int rowInserted = ps.executeUpdate();
             return rowInserted > 0; // Return true jika berhasil
         } catch (SQLException e) {
             Logger.getLogger(PegawaiController.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(null, "Error menambahkan data pegawai baru: " + e.getMessage());
             return false;
         }
     }
 
     // 3. UPDATE (Mengedit data pegawai)
     public boolean updatePegawai(Pegawai p) {
-        String sql = "UPDATE pegawai SET nama_pegawai=?, usia_pegawai=?, jk_pegawai=?, no_hp_pegawai=?, alamat_pegawai=?, start_date=? WHERE id_pegawai=?";
+        String sql = "UPDATE pegawai SET nama_pegawai=?, password_pegawai=?, usia_pegawai=?, jk_pegawai=?, no_hp_pegawai=?, alamat_pegawai=?, start_date=? WHERE id_pegawai=?";
         
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, p.getNama_pegawai());
-            ps.setInt(2, p.getUsia_pegawai());
-            ps.setString(3, p.getJk_pegawai());
-            ps.setString(4, p.getNo_hp_pegawai());
-            ps.setString(5, p.getAlamat_pegawai());
-            ps.setDate(6, p.getStart_date());
-            ps.setInt(7, p.getId_pegawai()); // Where clause
+            ps.setString(2, p.getPassword_pegawai());
+            ps.setInt(3, p.getUsia_pegawai());
+            ps.setString(4, p.getJk_pegawai());
+            ps.setString(5, p.getNo_hp_pegawai());
+            ps.setString(6, p.getAlamat_pegawai());
+            
+            java.util.Date utilDate = p.getStart_date();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+            ps.setDate(7, sqlDate);
+            
+            ps.setInt(8, p.getId_pegawai()); // Where clause
             
             int rowUpdated = ps.executeUpdate();
             return rowUpdated > 0;
         } catch (SQLException e) {
             Logger.getLogger(PegawaiController.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(null, "Error meng-update data pegawai: " + e.getMessage());
             return false;
         }
     }
@@ -110,6 +124,7 @@ public class PegawaiController {
             return rowDeleted > 0;
         } catch (SQLException e) {
             Logger.getLogger(PegawaiController.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(null, "Error dalam menghapus pegawai: " + e.getMessage());
             return false;
         }
     }

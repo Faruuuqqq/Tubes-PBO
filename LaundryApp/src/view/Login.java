@@ -3,6 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
+import config.Koneksi;
+import controller.*;
+import model.*;
+import java.sql.*;
+import javax.swing.*;
 
 /**
  *
@@ -11,7 +16,7 @@ package view;
 public class Login extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
-
+    
     /**
      * Creates new form Login
      */
@@ -33,7 +38,7 @@ public class Login extends javax.swing.JFrame {
         lblPassword = new javax.swing.JLabel();
         txtIdPegawai = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
+        loginButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         pnlCopyright = new javax.swing.JPanel();
@@ -52,12 +57,12 @@ public class Login extends javax.swing.JFrame {
         lblPassword.setForeground(new java.awt.Color(90, 106, 125));
         lblPassword.setText("Password:");
 
-        jButton1.setFont(new java.awt.Font("Times New Roman", 2, 24)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(26, 75, 125));
-        jButton1.setText("Login");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        loginButton.setFont(new java.awt.Font("Times New Roman", 2, 24)); // NOI18N
+        loginButton.setForeground(new java.awt.Color(26, 75, 125));
+        loginButton.setText("Login");
+        loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                loginButtonActionPerformed(evt);
             }
         });
 
@@ -123,7 +128,7 @@ public class Login extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlLoginLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(loginButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(pnlLoginLayout.createSequentialGroup()
                         .addGroup(pnlLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(lblUsername)
@@ -150,7 +155,7 @@ public class Login extends javax.swing.JFrame {
                     .addComponent(lblPassword)
                     .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(22, 22, 22)
-                .addComponent(jButton1)
+                .addComponent(loginButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
                 .addComponent(pnlCopyright, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -169,9 +174,34 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
+        // TODO add your handling code here:\
+        int id = Integer.parseInt(txtIdPegawai.getText());
+        String password = new String(txtPassword.getPassword());
+        Koneksi conn = new Koneksi();
+        ResultSet rs = conn.getData("select * from pegawai where id = " + id + " and password = '" + password + "';");
+        
+        try {
+            if(rs != null && rs.next()) {
+                String nama_pegawai = rs.getString(3);
+                int usia_pegawai = rs.getInt(4);
+                String jk_pegawai = rs.getString(5);
+                String no_hp_pegawai = rs.getString(6);
+                String alamat_pegawai = rs.getString(7);
+                Date start_date = rs.getDate(8);
+                
+                Pegawai pegawai = new Pegawai(id, password, nama_pegawai, usia_pegawai, jk_pegawai, no_hp_pegawai, alamat_pegawai, start_date);
+                JOptionPane.showMessageDialog(null, "Pegawai logged in successfully!");
+                MainMenu main_menu = new MainMenu(pegawai);
+                this.dispose();
+                main_menu.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(null, "Wrong username/password! Try again!");
+            }
+        } catch(Exception e) {
+            JOptionPane.showMessageDialog(null, "Error in logging in: " + e.getMessage());
+        }
+    }//GEN-LAST:event_loginButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -200,12 +230,12 @@ public class Login extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel copyright;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lblUsername;
+    private javax.swing.JButton loginButton;
     private javax.swing.JPanel pnlCopyright;
     private javax.swing.JPanel pnlLogin;
     private javax.swing.JTextField txtIdPegawai;

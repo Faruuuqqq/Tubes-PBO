@@ -4,7 +4,13 @@
  */
 
 package view;
-
+import config.Koneksi;
+import controller.*;
+import model.*;
+import java.sql.*;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Alesha Naila
@@ -12,12 +18,50 @@ package view;
 public class KelolaJenisItem extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(KelolaPelanggan.class.getName());
-
+    private Pegawai current_pegawai;
     /** Creates new form KelolaPelanggan */
     public KelolaJenisItem() {
         initComponents();
     }
+    public KelolaJenisItem(Pegawai pegawai) {
+        initComponents();
+        this.current_pegawai = pegawai;
+        cleanFields();
+        showTablePelanggan();
+        setInitButtons();
+    }
 
+     private void cleanFields() {
+        id.setText(null);
+        nama.setText(null);
+        harga.setText(null);
+    }
+     
+    private void showTablePelanggan() {
+        JenisItemController j = new JenisItemController();
+        List<JenisItem> list_j = j.getAllJenisItem();
+        
+        DefaultTableModel model = (DefaultTableModel) tableItem.getModel();
+        for (int i = 0; i < list_j.size(); i++) {
+            JenisItem ji = list_j.get(i);
+            model.setValueAt(ji.getId_jenis_item(), i, 0);
+            model.setValueAt(ji.getNama_item(), i, 1);
+            model.setValueAt(ji.getHarga_per_kg(), i, 2);
+        }
+    }
+    
+    private void setInitButtons() {
+        id.setEnabled(false);
+        nama.setEnabled(false);
+        harga.setEnabled(false);
+        
+        simpan.setEnabled(false);
+        reset.setEnabled(false);
+        hapus.setEnabled(true);
+        tambah.setEnabled(true);
+        ubah.setEnabled(true);
+             
+    }
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -30,21 +74,23 @@ public class KelolaJenisItem extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         lblJenisItem = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        menu = new javax.swing.JButton();
         lblIdItem = new javax.swing.JLabel();
-        txtIdPelanggan = new javax.swing.JTextField();
+        id = new javax.swing.JTextField();
         lblNamaItem = new javax.swing.JLabel();
-        txtNamaItem = new javax.swing.JTextField();
+        nama = new javax.swing.JTextField();
         txtHargaPerKg = new javax.swing.JLabel();
-        lblNoHp = new javax.swing.JTextField();
-        btnSimpanItem = new javax.swing.JButton();
-        btnHapusItem = new javax.swing.JButton();
-        btnBatalItem = new javax.swing.JButton();
+        harga = new javax.swing.JTextField();
+        simpan = new javax.swing.JButton();
+        hapus = new javax.swing.JButton();
+        reset = new javax.swing.JButton();
         tblItem = new javax.swing.JScrollPane();
         tableItem = new javax.swing.JTable();
         txtCariItem = new javax.swing.JTextField();
         pnlCopyright = new javax.swing.JPanel();
         copyright = new javax.swing.JLabel();
+        tambah = new javax.swing.JButton();
+        ubah = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -59,10 +105,15 @@ public class KelolaJenisItem extends javax.swing.JFrame {
         lblJenisItem.setText("Jenis Item");
         lblJenisItem.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(240, 244, 248), 2, true));
 
-        jButton1.setBackground(new java.awt.Color(26, 75, 125));
-        jButton1.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(240, 244, 248));
-        jButton1.setText("Main Menu");
+        menu.setBackground(new java.awt.Color(26, 75, 125));
+        menu.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        menu.setForeground(new java.awt.Color(240, 244, 248));
+        menu.setText("Main Menu");
+        menu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -70,7 +121,7 @@ public class KelolaJenisItem extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(menu)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblJenisItem, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(141, 141, 141))
@@ -83,12 +134,18 @@ public class KelolaJenisItem extends javax.swing.JFrame {
                 .addGap(19, 19, 19))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(menu)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         lblIdItem.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblIdItem.setText("ID Item:");
+
+        id.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                idActionPerformed(evt);
+            }
+        });
 
         lblNamaItem.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblNamaItem.setText("Nama:");
@@ -96,20 +153,41 @@ public class KelolaJenisItem extends javax.swing.JFrame {
         txtHargaPerKg.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         txtHargaPerKg.setText("Harga per Kg (Rp):");
 
-        btnSimpanItem.setBackground(new java.awt.Color(76, 175, 80));
-        btnSimpanItem.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        btnSimpanItem.setForeground(new java.awt.Color(240, 244, 248));
-        btnSimpanItem.setText("Simpan");
+        harga.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                hargaKeyTyped(evt);
+            }
+        });
 
-        btnHapusItem.setBackground(new java.awt.Color(211, 47, 47));
-        btnHapusItem.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        btnHapusItem.setForeground(new java.awt.Color(240, 244, 248));
-        btnHapusItem.setText("Hapus");
+        simpan.setBackground(new java.awt.Color(76, 175, 80));
+        simpan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        simpan.setForeground(new java.awt.Color(240, 244, 248));
+        simpan.setText("Simpan");
+        simpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                simpanActionPerformed(evt);
+            }
+        });
 
-        btnBatalItem.setBackground(new java.awt.Color(90, 106, 125));
-        btnBatalItem.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        btnBatalItem.setForeground(new java.awt.Color(240, 244, 248));
-        btnBatalItem.setText("Batal");
+        hapus.setBackground(new java.awt.Color(211, 47, 47));
+        hapus.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        hapus.setForeground(new java.awt.Color(240, 244, 248));
+        hapus.setText("Hapus");
+        hapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hapusActionPerformed(evt);
+            }
+        });
+
+        reset.setBackground(new java.awt.Color(90, 106, 125));
+        reset.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        reset.setForeground(new java.awt.Color(240, 244, 248));
+        reset.setText("Reset");
+        reset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetActionPerformed(evt);
+            }
+        });
 
         tableItem.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         tableItem.setModel(new javax.swing.table.DefaultTableModel(
@@ -154,6 +232,26 @@ public class KelolaJenisItem extends javax.swing.JFrame {
                 .addComponent(copyright))
         );
 
+        tambah.setBackground(new java.awt.Color(0, 204, 204));
+        tambah.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        tambah.setForeground(new java.awt.Color(240, 244, 248));
+        tambah.setText("Tambah");
+        tambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tambahActionPerformed(evt);
+            }
+        });
+
+        ubah.setBackground(new java.awt.Color(0, 102, 255));
+        ubah.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        ubah.setForeground(new java.awt.Color(240, 244, 248));
+        ubah.setText("Ubah");
+        ubah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ubahActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -161,26 +259,34 @@ public class KelolaJenisItem extends javax.swing.JFrame {
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnSimpanItem)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnHapusItem, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnBatalItem, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(txtHargaPerKg)
-                            .addGap(18, 18, 18)
-                            .addComponent(lblNoHp, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lblIdItem)
-                                .addComponent(lblNamaItem))
-                            .addGap(78, 78, 78)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtNamaItem)
-                                .addComponent(txtIdPelanggan)))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblIdItem)
+                            .addComponent(lblNamaItem))
+                        .addGap(78, 78, 78)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(nama)
+                            .addComponent(id)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtHargaPerKg)
+                                .addGap(18, 18, 18))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(hapus, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tambah))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(harga, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(reset, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(ubah))
+                                .addGap(54, 54, 54)
+                                .addComponent(simpan)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(tblItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -201,21 +307,25 @@ public class KelolaJenisItem extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(3, 3, 3)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtIdPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblIdItem))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblNamaItem)
-                            .addComponent(txtNamaItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(nama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtHargaPerKg)
-                            .addComponent(lblNoHp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(harga, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(29, 29, 29)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(tambah)
+                            .addComponent(simpan)
+                            .addComponent(ubah))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnSimpanItem)
-                            .addComponent(btnHapusItem)
-                            .addComponent(btnBatalItem))))
+                            .addComponent(reset)
+                            .addComponent(hapus))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                 .addComponent(pnlCopyright, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -237,6 +347,143 @@ public class KelolaJenisItem extends javax.swing.JFrame {
     private void txtCariItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCariItemActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCariItemActionPerformed
+
+    private void tambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambahActionPerformed
+        // TODO add your handling code here:
+        cleanFields();
+        tambah.setEnabled(false);
+        ubah.setEnabled(false);
+        hapus.setEnabled(false);
+        reset.setEnabled(true);
+        simpan.setEnabled(true);
+
+        nama.setEnabled(true);
+        harga.setEnabled(true);
+    }//GEN-LAST:event_tambahActionPerformed
+
+    private void ubahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ubahActionPerformed
+        // TODO add your handling code here:
+        int row = tableItem.getSelectedRow();
+        
+        if (row == -1) {
+             JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
+        } else {
+            try {
+            nama.setEnabled(true);
+            harga.setEnabled(true);
+            id.setText(tableItem.getValueAt(row, 0).toString());
+            nama.setText(tableItem.getValueAt(row, 1).toString());
+            harga.setText(tableItem.getValueAt(row, 2).toString());
+            
+            ubah.setEnabled(false);
+            tambah.setEnabled(false);
+            simpan.setEnabled(true);
+            reset.setEnabled(true);
+            hapus.setEnabled(false);
+            
+            } catch(Exception e) {
+                JOptionPane.showMessageDialog(null, "Error mengambil data jenis item untuk diubah: " + e.getMessage());
+            }
+        }
+
+    }//GEN-LAST:event_ubahActionPerformed
+
+    private void idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_idActionPerformed
+
+    private void resetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetActionPerformed
+        // TODO add your handling code here:
+        cleanFields();
+    }//GEN-LAST:event_resetActionPerformed
+
+    private void hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hapusActionPerformed
+        // TODO add your handling code here:
+        int row = tableItem.getSelectedRow();
+        
+        if (row == -1) {
+             JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
+        } else {
+            id.setEnabled(false);
+            nama.setEnabled(false);
+            harga.setEnabled(false);
+            
+            int id_j = Integer.parseInt(tableItem.getValueAt(row, 0).toString());
+            
+            id.setText(String.valueOf(id));
+            nama.setText(tableItem.getValueAt(row, 1).toString());
+            harga.setText(tableItem.getValueAt(row, 2).toString());
+            
+            int choice = JOptionPane.showConfirmDialog(null, "Yakin mau menghapus jenis_item dengan id = " + id_j + "?", "Konfirmasi Menghapus Pelanggan", JOptionPane.YES_NO_OPTION);
+            
+            if (choice == JOptionPane.YES_OPTION) {
+                
+                JenisItemController ji = new JenisItemController();
+                ji.deleteJenisItem(id_j);
+                
+                cleanFields();
+                setInitButtons();
+                showTablePelanggan();
+               
+            } else {
+                return;
+            }
+            
+        }
+    }//GEN-LAST:event_hapusActionPerformed
+
+    private void simpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanActionPerformed
+        // TODO add your handling code here:
+        if (nama.getText().equalsIgnoreCase("") || harga.getText().equalsIgnoreCase("")) {
+            JOptionPane.showMessageDialog(null, "Semua field harus diisi!");
+        } else {
+            int id_j;
+            String nama_j;
+            int harga_j;
+            
+            if(id.getText().equalsIgnoreCase("")) {
+                nama_j = nama.getText();
+                harga_j = Integer.parseInt(harga.getText());
+
+                JenisItem j = new JenisItem(nama_j, harga_j);
+                JenisItemController jc = new JenisItemController();
+                jc.addJenisItem(j);
+
+                cleanFields();
+                setInitButtons();
+                showTablePelanggan();
+
+            } else {
+                id_j = Integer.parseInt(id.getText());
+                nama_j = nama.getText();
+                harga_j = Integer.parseInt(harga.getText());
+
+                JenisItem j = new JenisItem(id_j, nama_j, harga_j);
+                JenisItemController jc = new JenisItemController();
+                jc.updateJenisItem(j);
+
+                cleanFields();
+                setInitButtons();
+                showTablePelanggan();
+
+            }
+        }
+    }//GEN-LAST:event_simpanActionPerformed
+
+    private void menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuActionPerformed
+        // TODO add your handling code here:
+        MainMenu main_menu = new MainMenu(this.current_pegawai);
+        this.dispose();
+        main_menu.setVisible(true);
+    }//GEN-LAST:event_menuActionPerformed
+
+    private void hargaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_hargaKeyTyped
+        // TODO add your handling code here:
+        if(!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+            JOptionPane.showMessageDialog(null, "Field harga hanya boleh diisi oleh angka!");
+        }
+    }//GEN-LAST:event_hargaKeyTyped
 
     /**
      * @param args the command line arguments
@@ -264,24 +511,26 @@ public class KelolaJenisItem extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBatalItem;
-    private javax.swing.JButton btnHapusItem;
-    private javax.swing.JButton btnSimpanItem;
     private javax.swing.JLabel copyright;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton hapus;
+    private javax.swing.JTextField harga;
+    private javax.swing.JTextField id;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblIdItem;
     private javax.swing.JLabel lblJenisItem;
     private javax.swing.JLabel lblNamaItem;
-    private javax.swing.JTextField lblNoHp;
+    private javax.swing.JButton menu;
+    private javax.swing.JTextField nama;
     private javax.swing.JPanel pnlCopyright;
+    private javax.swing.JButton reset;
+    private javax.swing.JButton simpan;
     private javax.swing.JTable tableItem;
+    private javax.swing.JButton tambah;
     private javax.swing.JScrollPane tblItem;
     private javax.swing.JTextField txtCariItem;
     private javax.swing.JLabel txtHargaPerKg;
-    private javax.swing.JTextField txtIdPelanggan;
-    private javax.swing.JTextField txtNamaItem;
+    private javax.swing.JButton ubah;
     // End of variables declaration//GEN-END:variables
 
 }

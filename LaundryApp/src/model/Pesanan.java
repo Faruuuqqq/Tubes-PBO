@@ -22,6 +22,28 @@ public class Pesanan {
 
     public Pesanan() {}
 
+
+    public Pesanan(int id_pesanan, int id_pelanggan, int id_pegawai, Timestamp tgl_diterima, Timestamp tgl_selesai, double total_kg, double total_biaya, String status) {
+        this.id_pesanan = id_pesanan;
+        this.id_pelanggan = id_pelanggan;
+        this.id_pegawai = id_pegawai;
+        this.tgl_diterima = tgl_diterima;
+        this.tgl_selesai = tgl_selesai;
+        this.total_kg = total_kg;
+        this.total_biaya = total_biaya;
+        this.status = status;
+    }
+    
+    public Pesanan(int id_pelanggan, int id_pegawai, Timestamp tgl_diterima, Timestamp tgl_selesai, double total_kg, double total_biaya, String status) {
+        this.id_pelanggan = id_pelanggan;
+        this.id_pegawai = id_pegawai;
+        this.tgl_diterima = tgl_diterima;
+        this.tgl_selesai = tgl_selesai;
+        this.total_kg = total_kg;
+        this.total_biaya = total_biaya;
+        this.status = status;
+    }
+
     // Getter Setter
     public int getId_pesanan() { return id_pesanan; }
     public void setId_pesanan(int id_pesanan) { this.id_pesanan = id_pesanan; }
