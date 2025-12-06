@@ -174,34 +174,36 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
+    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // TODO add your handling code here:\
-        int id = Integer.parseInt(txtIdPegawai.getText());
-        String password = new String(txtPassword.getPassword());
-        Koneksi conn = new Koneksi();
-        ResultSet rs = conn.getData("select * from pegawai where id = " + id + " and password = '" + password + "';");
-        
         try {
-            if(rs != null && rs.next()) {
-                String nama_pegawai = rs.getString(3);
-                int usia_pegawai = rs.getInt(4);
-                String jk_pegawai = rs.getString(5);
-                String no_hp_pegawai = rs.getString(6);
-                String alamat_pegawai = rs.getString(7);
-                Date start_date = rs.getDate(8);
-                
-                Pegawai pegawai = new Pegawai(id, password, nama_pegawai, usia_pegawai, jk_pegawai, no_hp_pegawai, alamat_pegawai, start_date);
-                JOptionPane.showMessageDialog(null, "Pegawai logged in successfully!");
+            // Validasi input kosong
+            if (txtIdPegawai.getText().isEmpty() || new String(txtPassword.getPassword()).isEmpty()) {
+                JOptionPane.showMessageDialog(this, "ID dan Password harus diisi!");
+                return;
+            }
+
+            int id = Integer.parseInt(txtIdPegawai.getText());
+            String password = new String(txtPassword.getPassword());
+            
+            // Panggil Controller
+            PegawaiController pc = new PegawaiController();
+            Pegawai pegawai = pc.login(id, password);
+            
+            if (pegawai != null) {
+                JOptionPane.showMessageDialog(this, "Login Berhasil! Selamat Datang, " + pegawai.getNama_pegawai());
                 MainMenu main_menu = new MainMenu(pegawai);
                 this.dispose();
                 main_menu.setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(null, "Wrong username/password! Try again!");
+                JOptionPane.showMessageDialog(this, "ID atau Password salah!");
             }
-        } catch(Exception e) {
-            JOptionPane.showMessageDialog(null, "Error in logging in: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "ID Pegawai harus berupa angka!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
-    }//GEN-LAST:event_loginButtonActionPerformed
+    }
 
     /**
      * @param args the command line arguments

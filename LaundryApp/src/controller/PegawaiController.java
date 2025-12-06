@@ -128,4 +128,31 @@ public class PegawaiController {
             return false;
         }
     }
+    public Pegawai login(int id, String password) {
+        String sql = "SELECT * FROM pegawai WHERE id_pegawai = ? AND password = ?";
+        
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            ps.setString(2, password);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                Pegawai p = new Pegawai();
+                p.setId_pegawai(rs.getInt("id_pegawai"));
+                p.setPassword_pegawai(rs.getString("password"));
+                p.setNama_pegawai(rs.getString("nama_pegawai"));
+                p.setUsia_pegawai(rs.getInt("usia_pegawai"));
+                p.setJk_pegawai(rs.getString("jk_pegawai"));
+                p.setNo_hp_pegawai(rs.getString("no_hp_pegawai"));
+                p.setAlamat_pegawai(rs.getString("alamat_pegawai"));
+                p.setStart_date(rs.getDate("start_date"));
+                return p; // Login Berhasil, kembalikan objek pegawai
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(PegawaiController.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return null; // Login Gagal
+    }
 }

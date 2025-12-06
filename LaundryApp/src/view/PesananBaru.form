@@ -503,6 +503,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Tambah"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnTambahItemActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -606,6 +609,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Simpan"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSimpanPesananActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnBatalPesanan">
               <Properties>

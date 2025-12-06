@@ -20,6 +20,15 @@ public class PesananBaru extends javax.swing.JFrame {
     /**
      * Creates new form PesananBaru
      */
+    private java.util.List<Pelanggan> listPelanggan;
+    private java.util.List<Pegawai> listPegawai;
+    private java.util.List<JenisItem> listJenisItem;
+
+    // Variabel Keranjang Sementara
+    private java.util.List<DetailPesanan> keranjangBelanja = new java.util.ArrayList<>();
+    private double totalBiayaKeseluruhan = 0;
+    private double totalBeratKeseluruhan = 0;
+
     public PesananBaru() {
         initComponents();
     }
@@ -27,6 +36,37 @@ public class PesananBaru extends javax.swing.JFrame {
     public PesananBaru(Pegawai pegawai) {
         initComponents();
         this.current_pegawai = pegawai;
+
+        loadDataCombo();
+    }
+
+    private void loadDataCombo() {
+        // Load Pelanggan
+        PelangganController pc = new PelangganController();
+        listPelanggan = pc.getAllPelanggan();
+        comboBoxPelanggan.removeAllItems();
+        comboBoxPelanggan.addItem("Pilih Pelanggan");
+        for (Pelanggan p : listPelanggan) {
+            comboBoxPelanggan.addItem(p.getNama_pelanggan());
+        }
+
+        // Load Pegawai
+        PegawaiController pegC = new PegawaiController();
+        listPegawai = pegC.getAllPegawai();
+        comboBoxPegawai.removeAllItems();
+        comboBoxPegawai.addItem("Pilih Pegawai");
+        for (Pegawai p : listPegawai) {
+            comboBoxPegawai.addItem(p.getNama_pegawai());
+        }
+
+        // Load Jenis Item
+        JenisItemController jc = new JenisItemController();
+        listJenisItem = jc.getAllJenisItem();
+        comboBoxJenis.removeAllItems();
+        comboBoxJenis.addItem("Pilih Layanan");
+        for (JenisItem j : listJenisItem) {
+            comboBoxJenis.addItem(j.getNama_item() + " - Rp" + j.getHarga_per_kg()); 
+        }
     }
 
     /**
@@ -234,6 +274,11 @@ public class PesananBaru extends javax.swing.JFrame {
         btnTambahItem.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnTambahItem.setForeground(new java.awt.Color(240, 244, 248));
         btnTambahItem.setText("Tambah");
+        btnTambahItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTambahItemActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -295,6 +340,11 @@ public class PesananBaru extends javax.swing.JFrame {
         btnSimpanPesanan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnSimpanPesanan.setForeground(new java.awt.Color(240, 244, 248));
         btnSimpanPesanan.setText("Simpan");
+        btnSimpanPesanan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSimpanPesananActionPerformed(evt);
+            }
+        });
 
         btnBatalPesanan.setBackground(new java.awt.Color(211, 47, 47));
         btnBatalPesanan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -384,6 +434,112 @@ public class PesananBaru extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnTambahItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahItemActionPerformed
+        if (comboBoxJenis.getSelectedIndex() <= 0 || txtBeratItem.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Pilih jenis item dan masukkan berat!");
+            return;
+        }
+
+        try {
+            // Ambil Data dari Input
+            int indexItem = comboBoxJenis.getSelectedIndex() - 1;
+            JenisItem itemDipilih = listJenisItem.get(indexItem);
+            
+            double berat = Double.parseDouble(txtBeratItem.getText());
+            double hargaPerKg = itemDipilih.getHarga_per_kg();
+            double subtotal = berat * hargaPerKg;
+
+            // Masukkan ke List Keranjang
+            DetailPesanan detail = new DetailPesanan();
+            detail.setId_jenis_item(itemDipilih.getId_jenis_item());
+            detail.setBerat_item(berat);
+            detail.setTotal_harga_item(subtotal);
+            
+            keranjangBelanja.add(detail);
+
+            // Update Tabel
+            javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblDetailItem.getModel();
+            model.addRow(new Object[]{
+                itemDipilih.getNama_item(),
+                berat + " Kg",
+                "Rp " + subtotal
+            });
+
+            // Update Total Biaya
+            totalBiayaKeseluruhan += subtotal;
+            totalBeratKeseluruhan += berat;
+            
+            txtTotalBiaya.setText(String.valueOf(totalBiayaKeseluruhan));
+            txtTotalBerat.setText(String.valueOf(totalBeratKeseluruhan));
+            
+            // Reset Input Item
+            txtBeratItem.setText("");
+            txtHargaItem.setText("");
+            comboBoxJenis.setSelectedIndex(0);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Berat harus berupa angka!");
+        }
+    }//GEN-LAST:event_btnTambahItemActionPerformed
+
+    private void btnSimpanPesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanPesananActionPerformed
+        if (keranjangBelanja.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Keranjang pesanan masih kosong!");
+            return;
+        }
+        
+        // Validasi Header (Pelanggan & Pegawai)
+        if (comboBoxPelanggan.getSelectedIndex() <= 0 || comboBoxPegawai.getSelectedIndex() <= 0) {
+            JOptionPane.showMessageDialog(this, "Mohon pilih Pelanggan dan Pegawai!");
+            return;
+        }
+
+        try {
+            // Siapkan Data Pesanan
+            int indexPelanggan = comboBoxPelanggan.getSelectedIndex() - 1;
+            int indexPegawai = comboBoxPegawai.getSelectedIndex() - 1;
+            
+            Pelanggan pelanggan = listPelanggan.get(indexPelanggan);
+            Pegawai pegawai = listPegawai.get(indexPegawai);
+            
+            Pesanan pesanan = new Pesanan();
+            pesanan.setId_pelanggan(pelanggan.getId_pelanggan());
+            pesanan.setId_pegawai(pegawai.getId_pegawai());
+            
+            // Ambil tanggal dari JDateChooser
+            if (jDateChooser1.getDate() != null) {
+                pesanan.setTgl_diterima(new java.sql.Timestamp(jDateChooser1.getDate().getTime()));
+            } else {
+                pesanan.setTgl_diterima(new java.sql.Timestamp(new java.util.Date().getTime())); // Default now
+            }
+            
+            pesanan.setTotal_kg(totalBeratKeseluruhan);
+            pesanan.setTotal_biaya(totalBiayaKeseluruhan);
+            pesanan.setStatus("IN PROGRESS");
+
+            // Panggil Controller Transaksi
+            TransaksiController tc = new TransaksiController();
+            boolean sukses = tc.simpanTransaksi(pesanan, keranjangBelanja);
+
+            if (sukses) {
+                JOptionPane.showMessageDialog(this, "Transaksi Berhasil Disimpan!");
+                // Reset Form Transaksi
+                keranjangBelanja.clear();
+                ((javax.swing.table.DefaultTableModel) tblDetailItem.getModel()).setRowCount(0);
+                txtTotalBerat.setText("");
+                txtTotalBiaya.setText("");
+                totalBiayaKeseluruhan = 0;
+                totalBeratKeseluruhan = 0;
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menyimpan transaksi.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnSimpanPesananActionPerformed
 
     /**
      * @param args the command line arguments
