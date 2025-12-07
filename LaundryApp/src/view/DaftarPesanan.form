@@ -190,7 +190,7 @@
                               <Component id="lblIdItem7" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="status" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="24" pref="139" max="32767" attributes="0"/>
+                          <EmptySpace min="24" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jScrollPane1" min="-2" pref="286" max="-2" attributes="0"/>

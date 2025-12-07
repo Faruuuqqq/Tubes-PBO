@@ -489,17 +489,19 @@ public class KelolaJenisItem extends javax.swing.JFrame {
 
     private void hargaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_hargaKeyTyped
         // TODO add your handling code here:
-        if(!Character.isDigit(evt.getKeyChar())) {
+         if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar()!=evt.VK_PERIOD) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
             evt.consume();
-            JOptionPane.showMessageDialog(null, "Field harga hanya boleh diisi oleh angka!");
+            JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
+            return;
         }
     }//GEN-LAST:event_hargaKeyTyped
 
     private void idKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idKeyTyped
         // TODO add your handling code here:
-        if(!Character.isDigit(evt.getKeyChar())) {
+         if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar()!=evt.VK_PERIOD) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
             evt.consume();
-            JOptionPane.showMessageDialog(null, "Field id item hanya boleh diisi oleh angka!");
+            JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
+            return;
         }
     }//GEN-LAST:event_idKeyTyped
 

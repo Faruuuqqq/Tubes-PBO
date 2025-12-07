@@ -569,6 +569,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtBeratItem">
               <Events>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtBeratItemKeyReleased"/>
                 <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtBeratItemKeyTyped"/>
               </Events>
             </Component>

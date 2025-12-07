@@ -40,6 +40,7 @@ public class DaftarPesanan extends javax.swing.JFrame {
         loadPelanggan();
         loadPegawai();
         showTablePesanan(); 
+        setInitButtons();
         
     }
     

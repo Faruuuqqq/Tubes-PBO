@@ -176,6 +176,12 @@ public class KelolaPegawai extends javax.swing.JFrame {
         lblIdPegawai.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblIdPegawai.setText("ID Pegawai:");
 
+        id.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                idKeyTyped(evt);
+            }
+        });
+
         lblNamaPegawai.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblNamaPegawai.setText("Password: ");
 
@@ -642,9 +648,10 @@ public class KelolaPegawai extends javax.swing.JFrame {
 
     private void usiaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usiaKeyTyped
         // TODO add your handling code here:
-        if(!Character.isDigit(evt.getKeyChar())) {
+        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar()!=evt.VK_PERIOD) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
             evt.consume();
-            JOptionPane.showMessageDialog(null, "Field usia hanya boleh diisi oleh angka!");
+            JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
+            return;
         }
     }//GEN-LAST:event_usiaKeyTyped
 
@@ -670,6 +677,15 @@ public class KelolaPegawai extends javax.swing.JFrame {
             });
         }
     }//GEN-LAST:event_txtCariPelangganKeyReleased
+
+    private void idKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idKeyTyped
+        // TODO add your handling code here:
+        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar()!=evt.VK_PERIOD) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
+            evt.consume();
+            JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
+            return;
+        }
+    }//GEN-LAST:event_idKeyTyped
 
     /**
      * @param args the command line arguments

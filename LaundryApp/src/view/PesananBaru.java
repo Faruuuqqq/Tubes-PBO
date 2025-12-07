@@ -39,7 +39,7 @@ public class PesananBaru extends javax.swing.JFrame {
     public PesananBaru(Pegawai pegawai) {
         initComponents();
         this.current_pegawai = pegawai;
-
+        setInitComponents();
         loadDataCombo();
     }
     
@@ -300,20 +300,21 @@ public class PesananBaru extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(existing))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(comboBoxPelanggan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(comboBoxPegawai, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(15, 15, 15))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(tglTerima, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(txtIdPesanan, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cek, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(cek, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(existing))
+                            .addComponent(tglTerima, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -372,6 +373,9 @@ public class PesananBaru extends javax.swing.JFrame {
         lblHargaItem.setText("Total Harga Item (Rp):");
 
         txtBeratItem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBeratItemKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtBeratItemKeyTyped(evt);
             }
@@ -680,22 +684,18 @@ public class PesananBaru extends javax.swing.JFrame {
 
     private void txtBeratItemKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBeratItemKeyTyped
         // TODO add your handling code here:
-        if(!Character.isDigit(evt.getKeyChar())) {
+        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar()!=evt.VK_PERIOD) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
             evt.consume();
             JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
+            return;
         }
-        
-        int choice = comboBoxJenis.getSelectedIndex();
-        
-        double total = current_ji.get(choice).getHarga_per_kg() * Integer.parseInt(txtBeratItem.getText());
-        
-        txtHargaItem.setText(String.valueOf(total));
         
         
     }//GEN-LAST:event_txtBeratItemKeyTyped
 
     private void btnBatalPesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalPesananActionPerformed
         // TODO add your handling code here:
+        btnTambahItem.setEnabled(true);
         txtIdPesanan.setText(null);
         tglTerima.setDate(null);
         comboBoxPelanggan.setSelectedIndex(0);
@@ -710,6 +710,7 @@ public class PesananBaru extends javax.swing.JFrame {
     private void baruActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_baruActionPerformed
         // TODO add your handling code here:
         baru.setEnabled(false);
+        existing.setEnabled(false);
         txtIdPesanan.setEnabled(false);
       
         btnTambahItem.setEnabled(true);
@@ -728,7 +729,8 @@ public class PesananBaru extends javax.swing.JFrame {
     }//GEN-LAST:event_baruActionPerformed
 
     private void existingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_existingActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:e
+        existing.setEnabled(false);
         baru.setEnabled(false);
         txtIdPesanan.setEnabled(true);    
         cek.setEnabled(true);
@@ -782,6 +784,39 @@ public class PesananBaru extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Field id pesanan hanya boleh diisi oleh angka!");
         }
     }//GEN-LAST:event_txtIdPesananKeyTyped
+
+    private void txtBeratItemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBeratItemKeyReleased
+        // TODO add your handling code here:
+                                               
+        if (comboBoxJenis.getSelectedIndex() <= 0) {
+            return;
+        }
+
+        if (txtBeratItem.getText().isEmpty()) {
+            txtHargaItem.setText("0");
+            return;
+        }
+
+        try {
+            int choice = comboBoxJenis.getSelectedIndex();
+            
+            JenisItem item = listJenisItem.get(choice - 1); 
+            
+            
+            double berat = Double.parseDouble(txtBeratItem.getText());
+            double hargaPerKg = item.getHarga_per_kg();
+            
+            double total = hargaPerKg * berat;
+            
+            txtHargaItem.setText(String.format("%.0f", total));
+            
+        } catch (NumberFormatException e) {
+            txtHargaItem.setText("0"); 
+        } catch (Exception e) {
+            System.out.println("Error hitung: " + e.getMessage());
+        }
+    
+    }//GEN-LAST:event_txtBeratItemKeyReleased
 
     /**
      * @param args the command line arguments
