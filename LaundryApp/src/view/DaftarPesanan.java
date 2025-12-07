@@ -559,7 +559,7 @@ public class DaftarPesanan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
         } else {
             try {
-                
+                // Aktifkan field agar bisa diedit
                 pelanggan.setEnabled(true);
                 pegawai.setEnabled(true);
                 tglTerima.setEnabled(true);
@@ -568,49 +568,44 @@ public class DaftarPesanan extends javax.swing.JFrame {
                 totalBiaya.setEnabled(true);
                 status.setEnabled(true);
                 
-                
+                // Ambil nilai dari tabel (Gunakan .toString() agar aman untuk Text Field)
                 id.setText(tablePesanan.getValueAt(row, 0).toString());
                 pelanggan.setSelectedItem(tablePesanan.getValueAt(row, 1).toString());
                 pegawai.setSelectedItem(tablePesanan.getValueAt(row, 2).toString());
-                
-                String terima = (String) tablePesanan.getValueAt(row, 3);
-                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                
-                try {
-                   Date date1 = sdf1.parse(terima);
-                    tglTerima.setDate(date1); 
-                } catch(Exception e) {
-                    JOptionPane.showMessageDialog(null, "Error mem-parsing tanggal diterima: " + e.getMessage());
+
+                // Data di tabel adalah Object (java.sql.Timestamp), bukan String
+                Object objTerima = tablePesanan.getValueAt(row, 3);
+                if (objTerima instanceof java.util.Date) {
+                    tglTerima.setDate((java.util.Date) objTerima);
                 }
                 
-                String selesai = (String) tablePesanan.getValueAt(row, 4);
-                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                
-                try {
-                   Date date2 = sdf2.parse(terima);
-                    tglSelesai.setDate(date2); 
-                } catch(Exception e) {
-                    JOptionPane.showMessageDialog(null, "Error mem-parsing tanggal selesai: " + e.getMessage());
+                Object objSelesai = tablePesanan.getValueAt(row, 4);
+                if (objSelesai instanceof java.util.Date) {
+                    tglSelesai.setDate((java.util.Date) objSelesai);
+                } else {
+                    tglSelesai.setDate(null); // Jika null di database
                 }
+
+                // --- PERBAIKAN HANDLING ANGKA (KG & BIAYA) ---
+                // Data di tabel adalah Double, gunakan toString()
                 totalKg.setText(tablePesanan.getValueAt(row, 5).toString());
                 totalBiaya.setText(tablePesanan.getValueAt(row, 6).toString());
                 
-                if(tablePesanan.getValueAt(row, 7).toString().equalsIgnoreCase("IN PROGRESS")) {
-                    status.setSelectedIndex(0);
-                } else {
-                    status.setSelectedIndex(1);
-                }
-                
-                
+                // Set Status
+                String st = tablePesanan.getValueAt(row, 7).toString();
+                status.setSelectedItem(st);
 
+                // Atur tombol
                 ubah.setEnabled(false);
                 reset.setEnabled(true);
                 simpan.setEnabled(true);
 
             } catch(Exception e) {
-                JOptionPane.showMessageDialog(null, "Error mengambil data pesanan untuk diubah: " + e.getMessage());
+                e.printStackTrace(); // Cek output error di bawah NetBeans jika masih gagal
+                JOptionPane.showMessageDialog(null, "Error mengambil data: " + e.getMessage());
             }
         }
+    }
     }//GEN-LAST:event_ubahActionPerformed
 
     private void resetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetActionPerformed

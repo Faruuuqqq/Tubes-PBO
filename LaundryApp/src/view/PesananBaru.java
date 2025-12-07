@@ -558,19 +558,12 @@ public class PesananBaru extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnTambahItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahItemActionPerformed
-        comboBoxJenis.setEnabled(false);
-        txtBeratItem.setEnabled(false);
-        btnTambahItem.setEnabled(false);
-        btnSimpanPesanan.setEnabled(true);
-        btnBatalPesanan.setEnabled(true);
-        
         if (comboBoxJenis.getSelectedIndex() <= 0 || txtBeratItem.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Pilih jenis item dan masukkan berat!");
             return;
         }
 
         try {
-            // Ambil Data dari Input
             int indexItem = comboBoxJenis.getSelectedIndex() - 1;
             JenisItem itemDipilih = listJenisItem.get(indexItem);
             
@@ -578,7 +571,6 @@ public class PesananBaru extends javax.swing.JFrame {
             double hargaPerKg = itemDipilih.getHarga_per_kg();
             double subtotal = berat * hargaPerKg;
 
-            // Masukkan ke List Keranjang
             DetailPesanan detail = new DetailPesanan();
             detail.setId_jenis_item(itemDipilih.getId_jenis_item());
             detail.setBerat_item(berat);
@@ -586,29 +578,38 @@ public class PesananBaru extends javax.swing.JFrame {
             
             keranjangBelanja.add(detail);
 
-            // Update Tabel
+
             javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tblDetailItem.getModel();
-            model.addRow(new Object[]{
+            
+            model.insertRow(0, new Object[]{
                 itemDipilih.getNama_item(),
                 berat + " Kg",
-                "Rp " + subtotal
+                "Rp " + String.format("%,.0f", subtotal) // Format rupiah sederhana
             });
 
-            // Update Total Biaya
             totalBiayaKeseluruhan += subtotal;
             totalBeratKeseluruhan += berat;
             
-            txtTotalBiaya.setText(String.valueOf(totalBiayaKeseluruhan));
+            txtTotalBiaya.setText(String.format("%.0f", totalBiayaKeseluruhan));
             txtTotalBerat.setText(String.valueOf(totalBeratKeseluruhan));
             
-            // Reset Input Item
             txtBeratItem.setText("");
             txtHargaItem.setText("");
             comboBoxJenis.setSelectedIndex(0);
+            
+            comboBoxJenis.setEnabled(true);
+            txtBeratItem.setEnabled(true);
+            btnTambahItem.setEnabled(true);
+            
+            btnSimpanPesanan.setEnabled(true);
+            btnBatalPesanan.setEnabled(true);
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Berat harus berupa angka!");
+            JOptionPane.showMessageDialog(this, "Berat harus berupa angka yang valid!");
+        } catch (Exception e) {
+            System.out.println("Error tambah item: " + e.getMessage());
         }
+    }
     }//GEN-LAST:event_btnTambahItemActionPerformed
 
     private void btnSimpanPesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanPesananActionPerformed
@@ -787,21 +788,19 @@ public class PesananBaru extends javax.swing.JFrame {
 
     private void txtBeratItemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBeratItemKeyReleased
         // TODO add your handling code here:
-                                               
         if (comboBoxJenis.getSelectedIndex() <= 0) {
             return;
         }
 
+        // Cek jika kosong, set 0 dan return agar tidak error
         if (txtBeratItem.getText().isEmpty()) {
             txtHargaItem.setText("0");
             return;
         }
 
         try {
-            int choice = comboBoxJenis.getSelectedIndex();
-            
-            JenisItem item = listJenisItem.get(choice - 1); 
-            
+            int choice = comboBoxJenis.getSelectedIndex() - 1;
+            JenisItem item = listJenisItem.get(choice); 
             
             double berat = Double.parseDouble(txtBeratItem.getText());
             double hargaPerKg = item.getHarga_per_kg();
@@ -815,7 +814,6 @@ public class PesananBaru extends javax.swing.JFrame {
         } catch (Exception e) {
             System.out.println("Error hitung: " + e.getMessage());
         }
-    
     }//GEN-LAST:event_txtBeratItemKeyReleased
 
     /**
