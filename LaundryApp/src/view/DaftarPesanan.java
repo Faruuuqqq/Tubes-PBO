@@ -282,6 +282,18 @@ public class DaftarPesanan extends javax.swing.JFrame {
         lblIdItem7.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblIdItem7.setText("Status :");
 
+        totalKg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                totalKgKeyTyped(evt);
+            }
+        });
+
+        totalBiaya.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                totalBiayaKeyTyped(evt);
+            }
+        });
+
         status.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "IN PROGRESS", "SELESAI" }));
 
         ubah.setBackground(new java.awt.Color(0, 102, 255));
@@ -443,7 +455,7 @@ public class DaftarPesanan extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblIdItem7)
                             .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(24, 139, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -559,7 +571,7 @@ public class DaftarPesanan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
         } else {
             try {
-                // Aktifkan field agar bisa diedit
+                
                 pelanggan.setEnabled(true);
                 pegawai.setEnabled(true);
                 tglTerima.setEnabled(true);
@@ -568,12 +580,12 @@ public class DaftarPesanan extends javax.swing.JFrame {
                 totalBiaya.setEnabled(true);
                 status.setEnabled(true);
                 
-                // Ambil nilai dari tabel (Gunakan .toString() agar aman untuk Text Field)
+                
                 id.setText(tablePesanan.getValueAt(row, 0).toString());
                 pelanggan.setSelectedItem(tablePesanan.getValueAt(row, 1).toString());
                 pegawai.setSelectedItem(tablePesanan.getValueAt(row, 2).toString());
 
-                // Data di tabel adalah Object (java.sql.Timestamp), bukan String
+                
                 Object objTerima = tablePesanan.getValueAt(row, 3);
                 if (objTerima instanceof java.util.Date) {
                     tglTerima.setDate((java.util.Date) objTerima);
@@ -586,26 +598,24 @@ public class DaftarPesanan extends javax.swing.JFrame {
                     tglSelesai.setDate(null); // Jika null di database
                 }
 
-                // --- PERBAIKAN HANDLING ANGKA (KG & BIAYA) ---
-                // Data di tabel adalah Double, gunakan toString()
+               
                 totalKg.setText(tablePesanan.getValueAt(row, 5).toString());
                 totalBiaya.setText(tablePesanan.getValueAt(row, 6).toString());
                 
-                // Set Status
+                
                 String st = tablePesanan.getValueAt(row, 7).toString();
                 status.setSelectedItem(st);
 
-                // Atur tombol
+             
                 ubah.setEnabled(false);
                 reset.setEnabled(true);
                 simpan.setEnabled(true);
 
             } catch(Exception e) {
-                e.printStackTrace(); // Cek output error di bawah NetBeans jika masih gagal
+                e.printStackTrace(); 
                 JOptionPane.showMessageDialog(null, "Error mengambil data: " + e.getMessage());
             }
         }
-    }
     }//GEN-LAST:event_ubahActionPerformed
 
     private void resetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetActionPerformed
@@ -644,10 +654,10 @@ public class DaftarPesanan extends javax.swing.JFrame {
             JScrollPane scrollPane = new JScrollPane(popupTable);
             scrollPane.setPreferredSize(new java.awt.Dimension(450, 200));
             
-            JOptionPane.showMessageDialog(this, scrollPane, "Rincian Pesanan #" + idPesanan, JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, scrollPane, "Rincian Pesanan #" + idPesanan, JOptionPane.PLAIN_MESSAGE);
             
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Gagal: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Gagal: " + e.getMessage());
         }
     }//GEN-LAST:event_detailActionPerformed
 
@@ -655,7 +665,7 @@ public class DaftarPesanan extends javax.swing.JFrame {
         // TODO add your handling code here:
         int row = tablePesanan.getSelectedRow();
         if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Pilih pesanan yang ingin dicetak!");
+            JOptionPane.showMessageDialog(null, "Pilih pesanan yang ingin dicetak!");
             return;
         }
 
@@ -709,10 +719,10 @@ public class DaftarPesanan extends javax.swing.JFrame {
             JScrollPane scrollPane = new JScrollPane(textArea);
             scrollPane.setPreferredSize(new java.awt.Dimension(300, 400));
             
-            JOptionPane.showMessageDialog(this, scrollPane, "Cetak Struk", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, scrollPane, "Cetak Struk", JOptionPane.PLAIN_MESSAGE);
             
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Gagal mencetak struk: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Gagal mencetak struk: " + e.getMessage());
             e.printStackTrace();
         }
     }//GEN-LAST:event_cetakStrukActionPerformed
@@ -728,6 +738,26 @@ public class DaftarPesanan extends javax.swing.JFrame {
         
         hitungTotalPendapatan();
     }//GEN-LAST:event_txtCariPesananKeyReleased
+
+    private void totalKgKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_totalKgKeyTyped
+        // TODO add your handling code here:
+        char c = evt.getKeyChar();
+    
+    if (!Character.isDigit(c) && c != '.' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+        evt.consume();
+        return;
+    }
+    }//GEN-LAST:event_totalKgKeyTyped
+
+    private void totalBiayaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_totalBiayaKeyTyped
+        // TODO add your handling code here:
+        char c = evt.getKeyChar();
+    
+    if (!Character.isDigit(c) && c != '.' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+        evt.consume();
+        return;
+    }
+    }//GEN-LAST:event_totalBiayaKeyTyped
 
     private void hitungTotalPendapatan() {
         double total = 0;

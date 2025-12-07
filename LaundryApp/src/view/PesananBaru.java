@@ -609,7 +609,6 @@ public class PesananBaru extends javax.swing.JFrame {
         } catch (Exception e) {
             System.out.println("Error tambah item: " + e.getMessage());
         }
-    }
     }//GEN-LAST:event_btnTambahItemActionPerformed
 
     private void btnSimpanPesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanPesananActionPerformed
@@ -685,13 +684,14 @@ public class PesananBaru extends javax.swing.JFrame {
 
     private void txtBeratItemKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBeratItemKeyTyped
         // TODO add your handling code here:
-        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar()!=evt.VK_PERIOD) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
-            evt.consume();
-            JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
-            return;
-        }
-        
-        
+    char c = evt.getKeyChar();
+    
+    if (!Character.isDigit(c) && c != '.' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+        evt.consume();
+        return;
+    }
+    
+    
     }//GEN-LAST:event_txtBeratItemKeyTyped
 
     private void btnBatalPesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalPesananActionPerformed
@@ -780,10 +780,12 @@ public class PesananBaru extends javax.swing.JFrame {
 
     private void txtIdPesananKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtIdPesananKeyTyped
         // TODO add your handling code here:
-        if(!Character.isDigit(evt.getKeyChar())) {
-            evt.consume();
-            JOptionPane.showMessageDialog(null, "Field id pesanan hanya boleh diisi oleh angka!");
-        }
+       char c = evt.getKeyChar();
+    
+    if (!Character.isDigit(c) && c != '.' && c != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+        evt.consume();
+        return;
+    }
     }//GEN-LAST:event_txtIdPesananKeyTyped
 
     private void txtBeratItemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBeratItemKeyReleased

@@ -22,7 +22,7 @@ public class Koneksi {
             try {
                 String url = "jdbc:mysql://localhost:3306/laundry_pbo_db";
                 String user = "root";
-                String password = "mysql"; // kalo pake xampp kosongin, ampps "mysql"
+                String password = ""; // kalo pake xampp kosongin, ampps "mysql"
 
                 // Register Driver
                 DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());

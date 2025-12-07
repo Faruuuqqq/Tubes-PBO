@@ -37,12 +37,16 @@ public class KelolaPelanggan extends javax.swing.JFrame {
         List<Pelanggan> list_p = p.getAllPelanggan();
         
          DefaultTableModel model = (DefaultTableModel) tablePelanggan.getModel();
-        for (int i = 0; i < list_p.size(); i++) {
-            Pelanggan pel = list_p.get(i);
-            model.setValueAt(pel.getId_pelanggan(), i, 0);
-            model.setValueAt(pel.getNama_pelanggan(), i, 1);
-            model.setValueAt(pel.getNo_hp_pelanggan(), i, 2);
-            model.setValueAt(pel.getAlamat_pelanggan(), i, 3);
+         
+         model.setRowCount(0);
+        for (Pelanggan pel : list_p) {
+            Object[] rowData = {
+                pel.getId_pelanggan(),
+                pel.getNama_pelanggan(),
+                pel.getNo_hp_pelanggan(),
+                pel.getAlamat_pelanggan()
+            };
+            model.addRow(rowData);
         }
     }
     
@@ -526,7 +530,7 @@ public class KelolaPelanggan extends javax.swing.JFrame {
 
     private void txtIdPelangganKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtIdPelangganKeyTyped
         // TODO add your handling code here:
-        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar()!=evt.VK_PERIOD) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
+        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
             evt.consume();
             JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
             return;

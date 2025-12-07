@@ -449,11 +449,11 @@ public class KelolaJenisItem extends javax.swing.JFrame {
         } else {
             int id_j;
             String nama_j;
-            int harga_j;
+            double harga_j;
             
             if(id.getText().equalsIgnoreCase("")) {
                 nama_j = nama.getText();
-                harga_j = Integer.parseInt(harga.getText());
+                harga_j = Double.parseDouble(harga.getText());
 
                 JenisItem j = new JenisItem(nama_j, harga_j);
                 JenisItemController jc = new JenisItemController();
@@ -466,7 +466,7 @@ public class KelolaJenisItem extends javax.swing.JFrame {
             } else {
                 id_j = Integer.parseInt(id.getText());
                 nama_j = nama.getText();
-                harga_j = Integer.parseInt(harga.getText());
+                harga_j = Double.parseDouble(harga.getText());
 
                 JenisItem j = new JenisItem(id_j, nama_j, harga_j);
                 JenisItemController jc = new JenisItemController();

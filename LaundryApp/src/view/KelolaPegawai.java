@@ -38,20 +38,27 @@ public class KelolaPegawai extends javax.swing.JFrame {
     
     private void showTablePegawai() {
         
-        PegawaiController p = new PegawaiController();
-        List<Pegawai> list_p = p.getAllPegawai();
+       PegawaiController p = new PegawaiController();
+        java.util.List<Pegawai> list_p = p.getAllPegawai();
         
-         DefaultTableModel model = (DefaultTableModel) tablePegawai.getModel();
-        for (int i = 0; i < list_p.size(); i++) {
-            Pegawai peg = list_p.get(i);
-            model.setValueAt(peg.getId_pegawai(), i, 0);
-            model.setValueAt(peg.getPassword_pegawai(), i, 1);
-            model.setValueAt(peg.getNama_pegawai(), i, 2);
-            model.setValueAt(peg.getUsia_pegawai(), i, 3);
-            model.setValueAt(peg.getJk_pegawai(), i, 4);
-            model.setValueAt(peg.getNo_hp_pegawai(), i, 5);
-            model.setValueAt(peg.getAlamat_pegawai(), i, 6);
-            model.setValueAt(peg.getStart_date(), i, 7);
+        DefaultTableModel model = (DefaultTableModel) tablePegawai.getModel();
+        
+        
+        model.setRowCount(0); 
+        
+       
+        for (Pegawai peg : list_p) {
+            Object[] rowData = {
+                peg.getId_pegawai(),
+                peg.getPassword_pegawai(),
+                peg.getNama_pegawai(),
+                peg.getUsia_pegawai(),
+                peg.getJk_pegawai(),
+                peg.getNo_hp_pegawai(),
+                peg.getAlamat_pegawai(),
+                peg.getStart_date()
+            };
+            model.addRow(rowData);
         }
         
     }
@@ -470,55 +477,70 @@ public class KelolaPegawai extends javax.swing.JFrame {
         // TODO add your handling code here:
         int row = tablePegawai.getSelectedRow();
 
-        if (row == -1) {
-            JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
+    if (row == -1) {
+        JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
+        return;
+    }
+
+    try {
+        // 1. Aktifkan semua input agar bisa diedit
+        id.setEnabled(false); // ID biasanya tidak boleh diubah (Primary Key)
+        password.setEnabled(true);
+        nama.setEnabled(true);
+        usia.setEnabled(true);
+        jk.setEnabled(true);
+        noHp.setEnabled(true);
+        alamat.setEnabled(true);
+        mulai.setEnabled(true);
+
+        // 2. Ambil data dengan AMAN menggunakan getVal()
+        // Jika di database NULL, di form akan muncul kosong (bisa langsung diisi)
+        id.setText(getVal(row, 0));
+        password.setText(getVal(row, 1));
+        nama.setText(getVal(row, 2));
+        usia.setText(getVal(row, 3)); // Usia string dulu, nanti user isi angka
+
+        // 3. Handle Jenis Kelamin (Dropdown)
+        String gender = getVal(row, 4);
+        if (gender.equalsIgnoreCase("P")) {
+            jk.setSelectedIndex(1); // Perempuan
         } else {
-            try {
-                
-                password.setEnabled(true);
-                nama.setEnabled(true);
-                usia.setEnabled(true);
-                jk.setEnabled(true);
-                noHp.setEnabled(true);
-                alamat.setEnabled(true);
-                mulai.setEnabled(true);
-                
-                
-                
-                id.setText(tablePegawai.getValueAt(row, 0).toString());
-                password.setText(tablePegawai.getValueAt(row, 1).toString());
-                nama.setText(tablePegawai.getValueAt(row, 2).toString());
-                usia.setText(tablePegawai.getValueAt(row, 3).toString());
-                
-                if(tablePegawai.getValueAt(row, 4).toString().equalsIgnoreCase("L")) {
-                    jk.setSelectedIndex(0);
-                } else {
-                    jk.setSelectedIndex(1);
-                }
-                
-                noHp.setText(tablePegawai.getValueAt(row, 5).toString());
-                alamat.setText(tablePegawai.getValueAt(row, 6).toString());
-                String tgl_mulai = (String) tablePegawai.getValueAt(row, 7);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                
-                try {
-                   Date date = sdf.parse(tgl_mulai);
-                    mulai.setDate(date); 
-                } catch(Exception e) {
-                    JOptionPane.showMessageDialog(null, "Error mem-parsing tanggal mulai: " + e.getMessage());
-                }
-                
-
-                ubah.setEnabled(false);
-                tambah.setEnabled(false);
-                simpan.setEnabled(true);
-                reset.setEnabled(true);
-                hapus.setEnabled(false);
-
-            } catch(Exception e) {
-                JOptionPane.showMessageDialog(null, "Error mengambil data pegawai untuk diubah: " + e.getMessage());
-            }
+            jk.setSelectedIndex(0); // Default Laki-laki jika null/L
         }
+
+        noHp.setText(getVal(row, 5));
+        alamat.setText(getVal(row, 6));
+
+        // 4. Handle Tanggal (JDateChooser)
+        Object tglObj = tablePegawai.getValueAt(row, 7);
+        if (tglObj != null) {
+            // Cek tipe datanya, karena bisa jadi String atau Date tergantung model tabel
+            if (tglObj instanceof java.util.Date) {
+                mulai.setDate((java.util.Date) tglObj);
+            } else if (tglObj instanceof String) {
+                // Jika terbaca sebagai String, coba parse (opsional)
+                try {
+                    java.util.Date date = new java.text.SimpleDateFormat("yyyy-MM-dd").parse((String) tglObj);
+                    mulai.setDate(date);
+                } catch (Exception e) {
+                    mulai.setDate(new java.util.Date());
+                }
+            }
+        } else {
+            mulai.setDate(new java.util.Date()); // Default hari ini jika null
+        }
+
+        // 5. Atur tombol
+        tambah.setEnabled(false);
+        ubah.setEnabled(false);   // Matikan tombol ubah agar tidak diklik 2x
+        hapus.setEnabled(false);
+        simpan.setEnabled(true);  // User klik simpan setelah edit
+        reset.setEnabled(true);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error saat memuat data: " + e.getMessage());
+    }
 
     }//GEN-LAST:event_ubahActionPerformed
 
@@ -534,42 +556,26 @@ public class KelolaPegawai extends javax.swing.JFrame {
         if (row == -1) {
              JOptionPane.showMessageDialog(null, "Pilih salah satu baris terlebih dahulu!");
         } else {
-                id.setEnabled(false);
-                password.setEnabled(false);
-                nama.setEnabled(false);
-                usia.setEnabled(false);
-                jk.setEnabled(false);
-                noHp.setEnabled(false);
-                alamat.setEnabled(false);
-                mulai.setEnabled(false);
-                int id_p = Integer.parseInt(tablePegawai.getValueAt(row, 0).toString());
-
-                id.setText(tablePegawai.getValueAt(row, 0).toString());
-                password.setText(tablePegawai.getValueAt(row, 1).toString());
-                nama.setText(tablePegawai.getValueAt(row, 2).toString());
-                usia.setText(tablePegawai.getValueAt(row, 3).toString());
-
-                if(tablePegawai.getValueAt(row, 4).toString().equalsIgnoreCase("L")) {
-                        jk.setSelectedIndex(0);
-                } else {
-                    jk.setSelectedIndex(1);
-                }
-
-                noHp.setText(tablePegawai.getValueAt(row, 5).toString());
-                alamat.setText(tablePegawai.getValueAt(row, 6).toString());
-                String tgl_mulai = (String) tablePegawai.getValueAt(row, 7);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-                int choice = JOptionPane.showConfirmDialog(null, "Yakin mau menghapus pegawai dengan id = " + id_p + "?", "Konfirmasi Menghapus Pelanggan", JOptionPane.YES_NO_OPTION);
-
-                if (choice == JOptionPane.YES_OPTION) {
-                    PegawaiController pc = new PegawaiController();
-                    pc.deletePegawai(id_p);
-                } else {
-                    return;
-                }
             
-            }  
+            String idStr = tablePegawai.getValueAt(row, 0).toString();
+            int id_p = Integer.parseInt(idStr);
+
+            int choice = JOptionPane.showConfirmDialog(null, "Yakin mau menghapus pegawai dengan id = " + id_p + "?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+
+            if (choice == JOptionPane.YES_OPTION) {
+                PegawaiController pc = new PegawaiController();
+                if (pc.deletePegawai(id_p)) {
+                    JOptionPane.showMessageDialog(null, "Data Berhasil Dihapus!");
+                    
+                   
+                    resetComponents();      
+                    setInitButtons();       
+                    showTablePegawai();    
+                } else {
+                    JOptionPane.showMessageDialog(null, "Gagal menghapus data.");
+                }
+            }
+        }
             
             
         
@@ -627,16 +633,18 @@ public class KelolaPegawai extends javax.swing.JFrame {
                     alamat_p = alamat.getText();
                     mulai_p = mulai.getDate();
 
-                    Pegawai p = new Pegawai(password_p, nama_p, usia_p, jk_p, no_hp_p, alamat_p, mulai_p);
+                    Pegawai p = new Pegawai(id_p, password_p, nama_p, usia_p, jk_p, no_hp_p, alamat_p, mulai_p);
+    
                     PegawaiController pc = new PegawaiController();
                     pc.updatePegawai(p);
-
 
                     resetComponents();
                     setInitButtons();
                     showTablePegawai();
 
                 }
+            
+            
             }
         
         
@@ -648,7 +656,7 @@ public class KelolaPegawai extends javax.swing.JFrame {
 
     private void usiaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usiaKeyTyped
         // TODO add your handling code here:
-        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar()!=evt.VK_PERIOD) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
+        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
             evt.consume();
             JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
             return;
@@ -680,13 +688,20 @@ public class KelolaPegawai extends javax.swing.JFrame {
 
     private void idKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idKeyTyped
         // TODO add your handling code here:
-        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar()!=evt.VK_PERIOD) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
+        if(!Character.isDigit(evt.getKeyChar()) && (evt.getKeyChar() != java.awt.event.KeyEvent.VK_BACK_SPACE)) {
             evt.consume();
-            JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
+            JOptionPane.showMessageDialog(null, "Field id item hanya boleh diisi oleh angka!");
             return;
         }
     }//GEN-LAST:event_idKeyTyped
 
+    private String getVal(int row, int col) {
+    Object v = tablePegawai.getValueAt(row, col);
+    if (v == null) {
+        return ""; // Kembalikan string kosong jika null, JANGAN null!
+    }
+    return v.toString();
+}
     /**
      * @param args the command line arguments
      */

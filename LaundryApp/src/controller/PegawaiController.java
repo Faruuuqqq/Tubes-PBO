@@ -60,7 +60,7 @@ public class PegawaiController {
     // 2. CREATE (Menambahkan pegawai baru)
     public boolean addPegawai(Pegawai p) {
         // Query insert sesuai kolom tabel pegawai
-        String sql = "INSERT INTO pegawai (nama_pegawai, usia_pegawai, jk_pegawai, no_hp_pegawai, alamat_pegawai, start_date) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO pegawai (nama_pegawai, password, usia_pegawai, jk_pegawai, no_hp_pegawai, alamat_pegawai, start_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -86,7 +86,7 @@ public class PegawaiController {
 
     // 3. UPDATE (Mengedit data pegawai)
     public boolean updatePegawai(Pegawai p) {
-        String sql = "UPDATE pegawai SET nama_pegawai=?, password_pegawai=?, usia_pegawai=?, jk_pegawai=?, no_hp_pegawai=?, alamat_pegawai=?, start_date=? WHERE id_pegawai=?";
+        String sql = "UPDATE pegawai SET nama_pegawai=?, password=?, usia_pegawai=?, jk_pegawai=?, no_hp_pegawai=?, alamat_pegawai=?, start_date=? WHERE id_pegawai=?";
         
         try {
             PreparedStatement ps = conn.prepareStatement(sql);

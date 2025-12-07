@@ -515,8 +515,14 @@
         <Component class="com.toedter.calendar.JDateChooser" name="tglSelesai">
         </Component>
         <Component class="javax.swing.JTextField" name="totalKg">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="totalKgKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="totalBiaya">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="totalBiayaKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JComboBox" name="status">
           <Properties>
