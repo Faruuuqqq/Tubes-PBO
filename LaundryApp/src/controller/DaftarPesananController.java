@@ -128,4 +128,82 @@ public class DaftarPesananController {
             return false;
         }
     }
+
+    // Method baru untuk mengambil data lengkap sekaligus
+    public javax.swing.table.DefaultTableModel getDaftarPesananLengkap() {
+        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel();
+        model.setColumnIdentifiers(new String[] {"ID", "Pelanggan", "Pegawai", "Tgl Terima", "Tgl Selesai", "Total Kg", "Total Biaya", "Status"});
+
+        String sql = "SELECT p.id_pesanan, pel.nama_pelanggan, peg.nama_pegawai, " +
+                    "p.tgl_diterima, p.tgl_selesai, p.total_kg, p.total_biaya, p.status " +
+                    "FROM pesanan p " +
+                    "JOIN pelanggan pel ON p.id_pelanggan = pel.id_pelanggan " +
+                    "JOIN pegawai peg ON p.id_pegawai = peg.id_pegawai " +
+                    "ORDER BY p.id_pesanan DESC";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                model.addRow(new Object[] {
+                    rs.getInt("id_pesanan"),
+                    rs.getString("nama_pelanggan"),
+                    rs.getString("nama_pegawai"),
+                    rs.getTimestamp("tgl_diterima"),
+                    rs.getTimestamp("tgl_selesai"),
+                    rs.getDouble("total_kg"),
+                    rs.getDouble("total_biaya"),
+                    rs.getString("status")
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return model;
+    }
+
+    // Cek apakah ID Pesanan ada di database
+    public boolean isPesananExists(int id) {
+        String sql = "SELECT id_pesanan FROM pesanan WHERE id_pesanan = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next(); // Return true jika data ditemukan
+        } catch (SQLException e) {
+            Logger.getLogger(DaftarPesananController.class.getName()).log(Level.SEVERE, null, e);
+            return false;
+        }
+    }
+
+    // Ambil detail item untuk ditampilkan di tabel PesananBaru
+    public javax.swing.table.DefaultTableModel getDetailItemsModel(int idPesanan) {
+        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel();
+        // Sesuaikan nama kolom dengan tabel di GUI PesananBaru kamu
+        model.addColumn("Item");
+        model.addColumn("Berat");
+        model.addColumn("Total Harga");
+
+        String sql = "SELECT j.nama_item, dp.berat_item, dp.total_harga_item " +
+                     "FROM detail_pesanan dp " +
+                     "JOIN jenis_item j ON dp.id_jenis_item = j.id_jenis_item " +
+                     "WHERE dp.id_pesanan = ?";
+                     
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, idPesanan);
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                model.addRow(new Object[] {
+                    rs.getString("nama_item"),
+                    rs.getDouble("berat_item"),
+                    rs.getDouble("total_harga_item")
+                });
+            }
+        } catch (SQLException e) {
+             Logger.getLogger(DaftarPesananController.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return model;
+    }
 }

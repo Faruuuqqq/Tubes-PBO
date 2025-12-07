@@ -45,24 +45,18 @@ public class PesananBaru extends javax.swing.JFrame {
     
     private void showTableDetailItem() {
         try {
+            if (txtIdPesanan.getText().isEmpty()) return;
+            
             int id_pesanan = Integer.parseInt(txtIdPesanan.getText());
-            Koneksi conn = new Koneksi();
-            ResultSet rs = conn.getData("select j.nama_item, dp.berat_item, dp.total_harga_item"
-                    + "from jenis_item j inner join detail_pesanan dp on j.id_jenis_item = dp.id_jenis_item"
-                    + "inner join pesanan p on dp.id_pesanan = p.id_pesanan"
-                    + "where dp.id_pesanan=" + id_pesanan + ";");
             
-            DefaultTableModel model = (DefaultTableModel) tblDetailItem.getModel();
-            int i=0;
-            while (rs.next()) {
-                model.setValueAt(rs.getString(1), i, 0);
-                model.setValueAt(rs.getDouble(2), i, 1);
-                model.setValueAt(rs.getDouble(3), i, 2);
-                i++;
-            }
+            DaftarPesananController controller = new DaftarPesananController();
             
+            // Set model tabel langsung dari data controller
+            tblDetailItem.setModel(controller.getDetailItemsModel(id_pesanan));
+            
+        } catch (NumberFormatException e) {
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error in showing all detail items of this id pesanan: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Gagal memuat detail: " + e.getMessage());
         }
     }
     
@@ -743,32 +737,42 @@ public class PesananBaru extends javax.swing.JFrame {
 
     private void cekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cekActionPerformed
         // TODO add your handling code here:
-        int id_pesanan = Integer.parseInt(txtIdPesanan.getText());
-        Koneksi conn = new Koneksi();
-        ResultSet rs = conn.getData("select id_pesanan from pesanan where id_pesanan=" + id_pesanan + ";");
-        
         try {
-            while(rs.next()) {
+            if (txtIdPesanan.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Masukkan ID Pesanan terlebih dahulu!");
+                return;
+            }
+
+            int id_pesanan = Integer.parseInt(txtIdPesanan.getText());
+            
+            DaftarPesananController controller = new DaftarPesananController();
+            boolean isAda = controller.isPesananExists(id_pesanan);
+            
+            if (isAda) {
+                // ID Ditemukan -> Kunci ID, Buka Inputan
                 txtIdPesanan.setEnabled(false);
                 btnTambahItem.setEnabled(true);
                 
+                // Reset & Siapkan komponen lain
                 btnSimpanPesanan.setEnabled(false);
-                btnBatalPesanan.setEnabled(false);
+                btnBatalPesanan.setEnabled(true);
+                
                 tglTerima.setEnabled(true);
                 comboBoxPelanggan.setEnabled(true);
                 comboBoxPegawai.setEnabled(true);
                 comboBoxJenis.setEnabled(true);
                 txtBeratItem.setEnabled(true);
 
-                tglTerima.setDate(null);
-                comboBoxPelanggan.setSelectedIndex(0);
-                comboBoxPegawai.setSelectedIndex(0);
-
-                showTableDetailItem();
-                    }
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "Id pesanan tidak ditemukan: " + e.getMessage());
-                }
+                showTableDetailItem(); 
+                
+            } else {
+                JOptionPane.showMessageDialog(this, "ID Pesanan " + id_pesanan + " tidak ditemukan!");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Field ID Pesanan harus diisi angka!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+        }
     }//GEN-LAST:event_cekActionPerformed
 
     private void txtIdPesananKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtIdPesananKeyTyped

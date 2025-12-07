@@ -128,6 +128,7 @@ public class PegawaiController {
             return false;
         }
     }
+    
     public Pegawai login(int id, String password) {
         String sql = "SELECT * FROM pegawai WHERE id_pegawai = ? AND password = ?";
         
@@ -153,6 +154,37 @@ public class PegawaiController {
         } catch (SQLException e) {
             Logger.getLogger(PegawaiController.class.getName()).log(Level.SEVERE, null, e);
         }
-        return null; // Login Gagal
+        return null;
+    }
+
+    // Method Cari Pegawai (Berdasarkan Nama atau ID)
+    public List<Pegawai> searchPegawai(String keyword) {
+        List<Pegawai> listPegawai = new ArrayList<>();
+
+        String sql = "SELECT * FROM pegawai WHERE nama_pegawai LIKE ? OR id_pegawai LIKE ?";
+        
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, "%" + keyword + "%");
+            ps.setString(2, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Pegawai p = new Pegawai();
+                p.setId_pegawai(rs.getInt("id_pegawai"));
+                p.setPassword_pegawai(rs.getString("password"));
+                p.setNama_pegawai(rs.getString("nama_pegawai"));
+                p.setUsia_pegawai(rs.getInt("usia_pegawai"));
+                p.setJk_pegawai(rs.getString("jk_pegawai"));
+                p.setNo_hp_pegawai(rs.getString("no_hp_pegawai"));
+                p.setAlamat_pegawai(rs.getString("alamat_pegawai"));
+                p.setStart_date(rs.getDate("start_date"));
+                
+                listPegawai.add(p);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(PegawaiController.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return listPegawai;
     }
 }

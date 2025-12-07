@@ -95,4 +95,27 @@ public class JenisItemController {
             return false;
         }
     }
+
+    public List<JenisItem> searchJenisItem(String keyword) {
+        List<JenisItem> listJenis = new ArrayList<>();
+        String sql = "SELECT * FROM jenis_item WHERE nama_item LIKE ?";
+        
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                JenisItem item = new JenisItem();
+                item.setId_jenis_item(rs.getInt("id_jenis_item"));
+                item.setNama_item(rs.getString("nama_item"));
+                item.setHarga_per_kg(rs.getDouble("harga_per_kg"));
+                
+                listJenis.add(item);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(JenisItemController.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return listJenis;
+    }
 }

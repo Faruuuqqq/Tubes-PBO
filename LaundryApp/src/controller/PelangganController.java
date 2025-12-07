@@ -103,4 +103,30 @@ public class PelangganController {
             return false;
         }
     }
+
+    // Method Cari Pelanggan berdasarkan Nama atau No HP
+    public List<Pelanggan> searchPelanggan(String keyword) {
+        List<Pelanggan> listPelanggan = new ArrayList<>();
+        String sql = "SELECT * FROM pelanggan WHERE nama_pelanggan LIKE ? OR no_hp_pelanggan LIKE ?";
+        
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, "%" + keyword + "%");
+            ps.setString(2, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Pelanggan p = new Pelanggan();
+                p.setId_pelanggan(rs.getInt("id_pelanggan"));
+                p.setNama_pelanggan(rs.getString("nama_pelanggan"));
+                p.setNo_hp_pelanggan(rs.getString("no_hp_pelanggan"));
+                p.setAlamat_pelanggan(rs.getString("alamat_pelanggan"));
+                
+                listPelanggan.add(p);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(PelangganController.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return listPelanggan;
+    }
 }

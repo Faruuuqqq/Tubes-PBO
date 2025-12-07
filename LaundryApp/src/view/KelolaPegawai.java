@@ -238,6 +238,11 @@ public class KelolaPegawai extends javax.swing.JFrame {
                 txtCariPelangganActionPerformed(evt);
             }
         });
+        txtCariPelanggan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtCariPelangganKeyReleased(evt);
+            }
+        });
 
         pnlCopyright.setBackground(new java.awt.Color(51, 51, 51));
         pnlCopyright.setForeground(new java.awt.Color(51, 51, 51));
@@ -642,6 +647,29 @@ public class KelolaPegawai extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Field usia hanya boleh diisi oleh angka!");
         }
     }//GEN-LAST:event_usiaKeyTyped
+
+    private void txtCariPelangganKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCariPelangganKeyReleased
+        String keyword = txtCariPelanggan.getText();
+        
+        PegawaiController pc = new PegawaiController();
+        List<Pegawai> list_p = pc.searchPegawai(keyword);
+        
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tablePegawai.getModel();
+        model.setRowCount(0); // Reset tabel
+        
+        for (Pegawai peg : list_p) {
+            model.addRow(new Object[]{
+                peg.getId_pegawai(),
+                peg.getPassword_pegawai(),
+                peg.getNama_pegawai(),
+                peg.getUsia_pegawai(),
+                peg.getJk_pegawai(),
+                peg.getNo_hp_pegawai(),
+                peg.getAlamat_pegawai(),
+                peg.getStart_date()
+            });
+        }
+    }//GEN-LAST:event_txtCariPelangganKeyReleased
 
     /**
      * @param args the command line arguments

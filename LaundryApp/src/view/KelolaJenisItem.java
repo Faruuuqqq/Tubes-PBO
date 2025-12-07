@@ -213,6 +213,11 @@ public class KelolaJenisItem extends javax.swing.JFrame {
                 txtCariItemActionPerformed(evt);
             }
         });
+        txtCariItem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtCariItemKeyReleased(evt);
+            }
+        });
 
         pnlCopyright.setBackground(new java.awt.Color(51, 51, 51));
         pnlCopyright.setForeground(new java.awt.Color(51, 51, 51));
@@ -497,6 +502,25 @@ public class KelolaJenisItem extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Field id item hanya boleh diisi oleh angka!");
         }
     }//GEN-LAST:event_idKeyTyped
+
+    private void txtCariItemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCariItemKeyReleased
+        // TODO add your handling code here:
+        String keyword = txtCariItem.getText();
+        
+        JenisItemController jc = new JenisItemController();
+        List<JenisItem> list_j = jc.searchJenisItem(keyword);
+        
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tableItem.getModel();
+        model.setRowCount(0);
+        
+        for (JenisItem ji : list_j) {
+            model.addRow(new Object[]{
+                ji.getId_jenis_item(),
+                ji.getNama_item(),
+                ji.getHarga_per_kg()
+            });
+        }
+    }//GEN-LAST:event_txtCariItemKeyReleased
 
     /**
      * @param args the command line arguments

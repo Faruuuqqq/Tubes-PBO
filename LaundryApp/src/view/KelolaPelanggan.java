@@ -222,6 +222,11 @@ public class KelolaPelanggan extends javax.swing.JFrame {
                 txtCariPelangganActionPerformed(evt);
             }
         });
+        txtCariPelanggan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtCariPelangganKeyReleased(evt);
+            }
+        });
 
         pnlCopyright.setBackground(new java.awt.Color(51, 51, 51));
         pnlCopyright.setForeground(new java.awt.Color(51, 51, 51));
@@ -526,6 +531,26 @@ public class KelolaPelanggan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Field id pelanggan hanya boleh diisi oleh angka!");
         }
     }//GEN-LAST:event_txtIdPelangganKeyTyped
+
+    private void txtCariPelangganKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCariPelangganKeyReleased
+        String keyword = txtCariPelanggan.getText();
+        
+        PelangganController pc = new PelangganController();
+        List<Pelanggan> list_p = pc.searchPelanggan(keyword);
+        
+        // Update Tabel
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) tablePelanggan.getModel();
+        model.setRowCount(0); // Kosongkan tabel dulu
+        
+        for (Pelanggan pel : list_p) {
+            model.addRow(new Object[]{
+                pel.getId_pelanggan(),
+                pel.getNama_pelanggan(),
+                pel.getNo_hp_pelanggan(),
+                pel.getAlamat_pelanggan()
+            });
+        }
+    }//GEN-LAST:event_txtCariPelangganKeyReleased
 
     /**
      * @param args the command line arguments
