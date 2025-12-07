@@ -91,15 +91,15 @@ public class PelangganController {
     // 4. DELETE (Hapus pelanggan)
     public boolean deletePelanggan(int id) {
         String sql = "DELETE FROM pelanggan WHERE id_pelanggan=?";
-        
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
-            
             return ps.executeUpdate() > 0;
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+            JOptionPane.showMessageDialog(null, "Gagal Hapus: Pelanggan ini memiliki riwayat transaksi!");
+            return false;
         } catch (SQLException e) {
             Logger.getLogger(PelangganController.class.getName()).log(Level.SEVERE, null, e);
-            JOptionPane.showMessageDialog(null, "Error dalam menghapus pelanggan: " + e.getMessage());
             return false;
         }
     }

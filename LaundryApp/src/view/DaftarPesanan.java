@@ -23,6 +23,9 @@ public class DaftarPesanan extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DaftarPesanan.class.getName());
     private Pegawai current_pegawai;
+
+    private java.util.List<Pelanggan> listPelanggan;
+    private java.util.List<Pegawai> listPegawai;
 //    private List<Pesanan> current_pesanan;
     /**
      * Creates new form DaftarPesanan
@@ -41,28 +44,24 @@ public class DaftarPesanan extends javax.swing.JFrame {
     }
     
     private void loadPelanggan() {
-        Koneksi conn = new Koneksi();
-        ResultSet rs = conn.getData("select nama_pelanggan from pelanggan;");
+        PelangganController pc = new PelangganController();
+        listPelanggan = pc.getAllPelanggan();
         
-        try {
-            while (rs.next()) {
-                pelanggan.addItem(rs.getString(1));
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error loading pelanggan list: " + e.getMessage());
+        pelanggan.removeAllItems();
+        pelanggan.addItem("Pilih Pelanggan");
+        for (Pelanggan p : listPelanggan) {
+            pelanggan.addItem(p.getNama_pelanggan());
         }
     }
     
     private void loadPegawai() {
-        Koneksi conn = new Koneksi();
-        ResultSet rs = conn.getData("select nama_pegawai from pegawai;");
+        PegawaiController pc = new PegawaiController();
+        listPegawai = pc.getAllPegawai();
         
-        try {
-            while (rs.next()) {
-                pegawai.addItem(rs.getString(1));
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error loading pegawai list: " + e.getMessage());
+        pegawai.removeAllItems();
+        pegawai.addItem("Pilih Pegawai");
+        for (Pegawai p : listPegawai) {
+            pegawai.addItem(p.getNama_pegawai());
         }
     }
     
@@ -191,6 +190,11 @@ public class DaftarPesanan extends javax.swing.JFrame {
         );
 
         txtCariPesanan.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        txtCariPesanan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtCariPesananKeyReleased(evt);
+            }
+        });
 
         filterStatus.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         filterStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SEMUA", "IN PROGRESS", "SELESAI" }));
@@ -476,49 +480,50 @@ public class DaftarPesanan extends javax.swing.JFrame {
 
     private void simpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simpanActionPerformed
         // TODO add your handling code here:
-        if (id.getText().equalsIgnoreCase("") || totalKg.getText().equalsIgnoreCase("")
-           || totalBiaya.getText().equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Semua field harus diisi!");
-        } else {
-            int id_pes;
-            String pelanggan_p, pegawai_p;
-            Timestamp terima_p, selesai_p;
-            double kg_p, biaya_p;
-            String status_p;
-           
- 
-            id_pes = Integer.parseInt(id.getText());
-            pelanggan_p = pelanggan.getSelectedItem().toString();
-            pegawai_p = pegawai.getSelectedItem().toString();
+        if (id.getText().isEmpty() || pelanggan.getSelectedIndex() <= 0 || pegawai.getSelectedIndex() <= 0) {
+            JOptionPane.showMessageDialog(this, "Lengkapi data (ID, Pelanggan, Pegawai)!");
+            return;
+        }
+
+        try {
+            // Ambil Data dari Input GUI
+            int id_pes = Integer.parseInt(id.getText());
             
-           Date date_terima = tglTerima.getDate();
-           terima_p = new Timestamp(date_terima.getTime());
-           Date date_selesai = tglSelesai.getDate();
-           selesai_p = new Timestamp(date_selesai.getTime());
-           
-            kg_p = Double.parseDouble(totalKg.getText());
-            biaya_p = Double.parseDouble(totalBiaya.getText());
-            status_p = status.getSelectedItem().toString();
-           
-            try {
-                Koneksi conn = new Koneksi();
-                ResultSet rs1 = conn.getData("select id_pelanggan where nama_pelanggan='" + pelanggan_p + "';");
-                ResultSet rs2 = conn.getData("select id_pegawai where nama_pegawai='" + pegawai_p + "';");
-                
-                int id_pelanggan = rs1.getInt(1);
-                int id_pegawai = rs2.getInt(2);
-                
-                Pesanan p = new Pesanan(id_pes, id_pelanggan, id_pegawai, terima_p, selesai_p, kg_p, biaya_p, status_p);
-                DaftarPesananController pc = new DaftarPesananController();
-                pc.updatePesanan(p);
-
-
+            // Ambil ID Pelanggan dari List
+            int idxPel = pelanggan.getSelectedIndex() - 1;
+            int idxPeg = pegawai.getSelectedIndex() - 1;
+            
+            int id_pelanggan = listPelanggan.get(idxPel).getId_pelanggan();
+            int id_pegawai = listPegawai.get(idxPeg).getId_pegawai();
+            
+            // Ambil Tanggal
+            java.sql.Timestamp terima_p = new java.sql.Timestamp(tglTerima.getDate().getTime());
+            java.sql.Timestamp selesai_p = null;
+            if (tglSelesai.getDate() != null) {
+                selesai_p = new java.sql.Timestamp(tglSelesai.getDate().getTime());
+            }
+            
+            double kg_p = Double.parseDouble(totalKg.getText());
+            double biaya_p = Double.parseDouble(totalBiaya.getText());
+            String status_p = status.getSelectedItem().toString();
+            
+            // Bungkus ke Object Model
+            Pesanan p = new Pesanan(id_pes, id_pelanggan, id_pegawai, terima_p, selesai_p, kg_p, biaya_p, status_p);
+            
+            // Panggil Controller
+            DaftarPesananController pc = new DaftarPesananController();
+            if (pc.updatePesanan(p)) {
+                JOptionPane.showMessageDialog(this, "Data Berhasil Diubah!");
                 resetComponents();
                 setInitButtons();
-                showTablePesanan();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Error in retrieving id_pelanggan and id_pegawai: " + e.getMessage());
-            }   
+                showTablePesanan(); // Refresh tabel
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal mengubah data!");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Format angka salah!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
     }//GEN-LAST:event_simpanActionPerformed
 
@@ -715,6 +720,18 @@ public class DaftarPesanan extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_cetakStrukActionPerformed
+
+    private void txtCariPesananKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCariPesananKeyReleased
+        // TODO add your handling code here:
+        String keyword = txtCariPesanan.getText();
+        
+        DaftarPesananController controller = new DaftarPesananController();
+        javax.swing.table.DefaultTableModel searchModel = controller.searchPesanan(keyword);
+        
+        tablePesanan.setModel(searchModel);
+        
+        hitungTotalPendapatan();
+    }//GEN-LAST:event_txtCariPesananKeyReleased
 
     private void hitungTotalPendapatan() {
         double total = 0;

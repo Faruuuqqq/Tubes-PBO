@@ -122,13 +122,16 @@ public class PegawaiController {
             
             int rowDeleted = ps.executeUpdate();
             return rowDeleted > 0;
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+            JOptionPane.showMessageDialog(null, "Gagal Hapus: Pegawai ini memiliki riwayat transaksi dan tidak bisa dihapus!");
+            return false;
         } catch (SQLException e) {
             Logger.getLogger(PegawaiController.class.getName()).log(Level.SEVERE, null, e);
             JOptionPane.showMessageDialog(null, "Error dalam menghapus pegawai: " + e.getMessage());
             return false;
         }
     }
-    
+
     public Pegawai login(int id, String password) {
         String sql = "SELECT * FROM pegawai WHERE id_pegawai = ? AND password = ?";
         

@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
+
 public class JenisItemController {
     
     private final Connection conn;
@@ -90,8 +92,12 @@ public class JenisItemController {
             ps.setInt(1, id);
             
             return ps.executeUpdate() > 0;
+        } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+            JOptionPane.showMessageDialog(null, "Gagal Hapus: Jenis Item ini sudah pernah dipesan dan tidak bisa dihapus!");
+            return false;
         } catch (SQLException e) {
             Logger.getLogger(JenisItemController.class.getName()).log(Level.SEVERE, null, e);
+            javax.swing.JOptionPane.showMessageDialog(null, "Error menghapus item: " + e.getMessage());
             return false;
         }
     }

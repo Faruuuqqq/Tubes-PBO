@@ -206,4 +206,44 @@ public class DaftarPesananController {
         }
         return model;
     }
+
+    public javax.swing.table.DefaultTableModel searchPesanan(String keyword) {
+        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel();
+        model.setColumnIdentifiers(new String[] {"ID Pesanan", "Pelanggan", "Pegawai", "Tgl. Diterima", "Tgl. Selesai", "Total Kg", "Total Biaya", "Status"});
+        
+        // Query dengan klausa WHERE ... LIKE ...
+        String sql = "SELECT p.id_pesanan, pel.nama_pelanggan, peg.nama_pegawai, " +
+                     "p.tgl_diterima, p.tgl_selesai, p.total_kg, p.total_biaya, p.status " +
+                     "FROM pesanan p " +
+                     "JOIN pelanggan pel ON p.id_pelanggan = pel.id_pelanggan " +
+                     "JOIN pegawai peg ON p.id_pegawai = peg.id_pegawai " +
+                     "WHERE p.id_pesanan LIKE ? OR pel.nama_pelanggan LIKE ? OR peg.nama_pegawai LIKE ? " +
+                     "ORDER BY p.id_pesanan DESC";
+                     
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            String searchKey = "%" + keyword + "%";
+            ps.setString(1, searchKey);
+            ps.setString(2, searchKey);
+            ps.setString(3, searchKey);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                model.addRow(new Object[] {
+                    rs.getInt("id_pesanan"),
+                    rs.getString("nama_pelanggan"),
+                    rs.getString("nama_pegawai"),
+                    rs.getTimestamp("tgl_diterima"),
+                    rs.getTimestamp("tgl_selesai"),
+                    rs.getDouble("total_kg"),
+                    rs.getDouble("total_biaya"),
+                    rs.getString("status")
+                });
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(DaftarPesananController.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return model;
+    }
 }
