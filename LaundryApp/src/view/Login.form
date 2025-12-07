@@ -114,6 +114,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtIdPegawai">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtIdPegawaiKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JPasswordField" name="txtPassword">
         </Component>

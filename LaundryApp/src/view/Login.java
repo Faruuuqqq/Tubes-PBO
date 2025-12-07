@@ -57,6 +57,12 @@ public class Login extends javax.swing.JFrame {
         lblPassword.setForeground(new java.awt.Color(90, 106, 125));
         lblPassword.setText("Password:");
 
+        txtIdPegawai.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtIdPegawaiKeyTyped(evt);
+            }
+        });
+
         loginButton.setFont(new java.awt.Font("Times New Roman", 2, 24)); // NOI18N
         loginButton.setForeground(new java.awt.Color(26, 75, 125));
         loginButton.setText("Login");
@@ -173,6 +179,14 @@ public class Login extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtIdPegawaiKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtIdPegawaiKeyTyped
+        // TODO add your handling code here:
+        if(!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+            JOptionPane.showMessageDialog(null, "Field id pegawai hanya boleh diisi oleh angka!");
+        }
+    }//GEN-LAST:event_txtIdPegawaiKeyTyped
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // TODO add your handling code here:\

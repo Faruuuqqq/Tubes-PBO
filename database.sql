@@ -1,3 +1,4 @@
+drop DATABASE if exists laundry_pbo_db;
 CREATE DATABASE laundry_pbo_db;
 USE laundry_pbo_db;
 
@@ -55,5 +56,5 @@ CREATE TABLE detail_pesanan (
 );
 
 -- Insert Data Dummy (Agar nanti bisa langsung tes login/tampil data)
-INSERT INTO pegawai (nama_pegawai, jk_pegawai, start_date) VALUES ('Admin', 'L', '2025-01-01');
+INSERT INTO pegawai (nama_pegawai, `password`, jk_pegawai, start_date) VALUES ('Admin', 'admin123', 'L', '2025-01-01');
 INSERT INTO jenis_item (nama_item, harga_per_kg) VALUES ('Cuci Kering', 5000), ('Cuci Setrika', 8000), ('Bed Cover', 12000);

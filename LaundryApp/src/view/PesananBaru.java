@@ -8,6 +8,8 @@ import controller.*;
 import model.*;
 import java.sql.*;
 import javax.swing.*;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -17,6 +19,7 @@ public class PesananBaru extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PesananBaru.class.getName());
     private Pegawai current_pegawai;
+    private List<JenisItem> current_ji;
     /**
      * Creates new form PesananBaru
      */
@@ -38,6 +41,49 @@ public class PesananBaru extends javax.swing.JFrame {
         this.current_pegawai = pegawai;
 
         loadDataCombo();
+    }
+    
+    private void showTableDetailItem() {
+        try {
+            int id_pesanan = Integer.parseInt(txtIdPesanan.getText());
+            Koneksi conn = new Koneksi();
+            ResultSet rs = conn.getData("select j.nama_item, dp.berat_item, dp.total_harga_item"
+                    + "from jenis_item j inner join detail_pesanan dp on j.id_jenis_item = dp.id_jenis_item"
+                    + "inner join pesanan p on dp.id_pesanan = p.id_pesanan"
+                    + "where dp.id_pesanan=" + id_pesanan + ";");
+            
+            DefaultTableModel model = (DefaultTableModel) tblDetailItem.getModel();
+            int i=0;
+            while (rs.next()) {
+                model.setValueAt(rs.getString(1), i, 0);
+                model.setValueAt(rs.getDouble(2), i, 1);
+                model.setValueAt(rs.getDouble(3), i, 2);
+                i++;
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error in showing all detail items of this id pesanan: " + e.getMessage());
+        }
+    }
+    
+    private void setInitComponents() {
+        baru.setEnabled(true);
+        existing.setEnabled(true);
+        cek.setEnabled(false);
+        
+        txtIdPesanan.setEnabled(false);
+        btnTambahItem.setEnabled(false);
+        btnSimpanPesanan.setEnabled(false);
+        btnBatalPesanan.setEnabled(false);
+        tglTerima.setEnabled(false);
+        comboBoxPelanggan.setEnabled(false);
+        comboBoxPegawai.setEnabled(false);
+        comboBoxJenis.setEnabled(false);
+        txtBeratItem.setEnabled(false);
+        
+        tglTerima.setDate(null);
+        comboBoxPelanggan.setSelectedIndex(0);
+        comboBoxPegawai.setSelectedIndex(0);
     }
 
     private void loadDataCombo() {
@@ -62,6 +108,7 @@ public class PesananBaru extends javax.swing.JFrame {
         // Load Jenis Item
         JenisItemController jc = new JenisItemController();
         listJenisItem = jc.getAllJenisItem();
+        current_ji = listJenisItem;
         comboBoxJenis.removeAllItems();
         comboBoxJenis.addItem("Pilih Layanan");
         for (JenisItem j : listJenisItem) {
@@ -92,7 +139,10 @@ public class PesananBaru extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         comboBoxPelanggan = new javax.swing.JComboBox<>();
         comboBoxPegawai = new javax.swing.JComboBox<>();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        tglTerima = new com.toedter.calendar.JDateChooser();
+        baru = new javax.swing.JButton();
+        existing = new javax.swing.JButton();
+        cek = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblDetailItem = new javax.swing.JTable();
@@ -128,6 +178,11 @@ public class PesananBaru extends javax.swing.JFrame {
         jButton1.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         jButton1.setForeground(new java.awt.Color(240, 244, 248));
         jButton1.setText("Main Menu");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -181,6 +236,12 @@ public class PesananBaru extends javax.swing.JFrame {
         lblIdPesanan.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblIdPesanan.setText("ID Pesanan:");
 
+        txtIdPesanan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtIdPesananKeyTyped(evt);
+            }
+        });
+
         lblTglDiterima.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblTglDiterima.setText("Tgl dan Jam Diterima:");
 
@@ -194,30 +255,71 @@ public class PesananBaru extends javax.swing.JFrame {
 
         comboBoxPegawai.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pegawai" }));
 
-        jDateChooser1.setDateFormatString("yyyy-MM-dd hh:mm:ss");
+        tglTerima.setDateFormatString("yyyy-MM-dd hh:mm:ss");
+
+        baru.setBackground(new java.awt.Color(0, 102, 255));
+        baru.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        baru.setForeground(new java.awt.Color(240, 244, 248));
+        baru.setText("Tambah ID Baru");
+        baru.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                baruActionPerformed(evt);
+            }
+        });
+
+        existing.setBackground(new java.awt.Color(0, 204, 204));
+        existing.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        existing.setForeground(new java.awt.Color(240, 244, 248));
+        existing.setText("Tambah ke Existing ID");
+        existing.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                existingActionPerformed(evt);
+            }
+        });
+
+        cek.setBackground(new java.awt.Color(90, 106, 125));
+        cek.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        cek.setForeground(new java.awt.Color(240, 244, 248));
+        cek.setText("Cek");
+        cek.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cekActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblTglDiterima)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(lblIdPesanan))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtIdPesanan)
+                            .addComponent(lblTglDiterima, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(lblIdPesanan)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(baru)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(existing))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(comboBoxPelanggan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(comboBoxPegawai, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(15, 15, 15))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(tglTerima, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(txtIdPesanan, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cek, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -225,11 +327,12 @@ public class PesananBaru extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblIdPesanan)
-                    .addComponent(txtIdPesanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtIdPesanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cek))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblTglDiterima)
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tglTerima, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(9, 9, 9)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
@@ -238,7 +341,11 @@ public class PesananBaru extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
                     .addComponent(comboBoxPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(baru)
+                    .addComponent(existing))
+                .addGap(0, 15, Short.MAX_VALUE))
         );
 
         jPanel4.setBackground(new java.awt.Color(240, 244, 248));
@@ -269,6 +376,14 @@ public class PesananBaru extends javax.swing.JFrame {
 
         lblHargaItem.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblHargaItem.setText("Total Harga Item (Rp):");
+
+        txtBeratItem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtBeratItemKeyTyped(evt);
+            }
+        });
+
+        txtHargaItem.setEditable(false);
 
         btnTambahItem.setBackground(new java.awt.Color(76, 175, 80));
         btnTambahItem.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -333,8 +448,12 @@ public class PesananBaru extends javax.swing.JFrame {
         lblTotalBerat.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         lblTotalBerat.setText("TOTAL BERAT:");
 
+        txtTotalBerat.setEditable(false);
+
         lblTotalBerat1.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         lblTotalBerat1.setText("TOTAL BIAYA:");
+
+        txtTotalBiaya.setEditable(false);
 
         btnSimpanPesanan.setBackground(new java.awt.Color(76, 175, 80));
         btnSimpanPesanan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -350,6 +469,11 @@ public class PesananBaru extends javax.swing.JFrame {
         btnBatalPesanan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnBatalPesanan.setForeground(new java.awt.Color(240, 244, 248));
         btnBatalPesanan.setText("Batal");
+        btnBatalPesanan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBatalPesananActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -369,7 +493,7 @@ public class PesananBaru extends javax.swing.JFrame {
                         .addGap(236, 236, 236))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addComponent(btnSimpanPesanan)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(30, 30, 30)
                         .addComponent(btnBatalPesanan, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(8, 8, 8))))
         );
@@ -384,7 +508,7 @@ public class PesananBaru extends javax.swing.JFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTotalBerat1)
                     .addComponent(txtTotalBiaya, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSimpanPesanan)
                     .addComponent(btnBatalPesanan))
@@ -397,15 +521,15 @@ public class PesananBaru extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(pnlCopyright, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(49, 49, 49)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addGap(15, 15, 15))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -413,11 +537,11 @@ public class PesananBaru extends javax.swing.JFrame {
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(pnlCopyright, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -436,6 +560,12 @@ public class PesananBaru extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnTambahItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahItemActionPerformed
+        comboBoxJenis.setEnabled(false);
+        txtBeratItem.setEnabled(false);
+        btnTambahItem.setEnabled(false);
+        btnSimpanPesanan.setEnabled(true);
+        btnBatalPesanan.setEnabled(true);
+        
         if (comboBoxJenis.getSelectedIndex() <= 0 || txtBeratItem.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Pilih jenis item dan masukkan berat!");
             return;
@@ -494,6 +624,8 @@ public class PesananBaru extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Mohon pilih Pelanggan dan Pegawai!");
             return;
         }
+        
+        
 
         try {
             // Siapkan Data Pesanan
@@ -508,11 +640,13 @@ public class PesananBaru extends javax.swing.JFrame {
             pesanan.setId_pegawai(pegawai.getId_pegawai());
             
             // Ambil tanggal dari JDateChooser
-            if (jDateChooser1.getDate() != null) {
-                pesanan.setTgl_diterima(new java.sql.Timestamp(jDateChooser1.getDate().getTime()));
+            if (tglTerima.getDate() != null) {
+                pesanan.setTgl_diterima(new java.sql.Timestamp(tglTerima.getDate().getTime()));
             } else {
                 pesanan.setTgl_diterima(new java.sql.Timestamp(new java.util.Date().getTime())); // Default now
             }
+            
+            
             
             pesanan.setTotal_kg(totalBeratKeseluruhan);
             pesanan.setTotal_biaya(totalBiayaKeseluruhan);
@@ -531,6 +665,8 @@ public class PesananBaru extends javax.swing.JFrame {
                 txtTotalBiaya.setText("");
                 totalBiayaKeseluruhan = 0;
                 totalBeratKeseluruhan = 0;
+                
+                setInitComponents();
             } else {
                 JOptionPane.showMessageDialog(this, "Gagal menyimpan transaksi.");
             }
@@ -540,6 +676,108 @@ public class PesananBaru extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
         }
     }//GEN-LAST:event_btnSimpanPesananActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        MainMenu main_menu = new MainMenu(this.current_pegawai);
+        this.dispose();
+        main_menu.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void txtBeratItemKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBeratItemKeyTyped
+        // TODO add your handling code here:
+        if(!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+            JOptionPane.showMessageDialog(null, "Field berat item hanya boleh diisi oleh angka!");
+        }
+        
+        int choice = comboBoxJenis.getSelectedIndex();
+        
+        double total = current_ji.get(choice).getHarga_per_kg() * Integer.parseInt(txtBeratItem.getText());
+        
+        txtHargaItem.setText(String.valueOf(total));
+        
+        
+    }//GEN-LAST:event_txtBeratItemKeyTyped
+
+    private void btnBatalPesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalPesananActionPerformed
+        // TODO add your handling code here:
+        txtIdPesanan.setText(null);
+        tglTerima.setDate(null);
+        comboBoxPelanggan.setSelectedIndex(0);
+        comboBoxPegawai.setSelectedIndex(0);
+        comboBoxJenis.setEnabled(true);
+        txtBeratItem.setEnabled(true);
+        txtBeratItem.setText(null);
+        txtTotalBerat.setText(null);
+        txtTotalBiaya.setText(null);
+    }//GEN-LAST:event_btnBatalPesananActionPerformed
+
+    private void baruActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_baruActionPerformed
+        // TODO add your handling code here:
+        baru.setEnabled(false);
+        txtIdPesanan.setEnabled(false);
+      
+        btnTambahItem.setEnabled(true);
+        btnSimpanPesanan.setEnabled(false);
+        btnBatalPesanan.setEnabled(false);
+        tglTerima.setEnabled(true);
+        comboBoxPelanggan.setEnabled(true);
+        comboBoxPegawai.setEnabled(true);
+        comboBoxJenis.setEnabled(true);
+        txtBeratItem.setEnabled(true);
+        
+        tglTerima.setDate(null);
+        comboBoxPelanggan.setSelectedIndex(0);
+        comboBoxPegawai.setSelectedIndex(0);
+        
+    }//GEN-LAST:event_baruActionPerformed
+
+    private void existingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_existingActionPerformed
+        // TODO add your handling code here:
+        baru.setEnabled(false);
+        txtIdPesanan.setEnabled(true);    
+        cek.setEnabled(true);
+        
+    }//GEN-LAST:event_existingActionPerformed
+
+    private void cekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cekActionPerformed
+        // TODO add your handling code here:
+        int id_pesanan = Integer.parseInt(txtIdPesanan.getText());
+        Koneksi conn = new Koneksi();
+        ResultSet rs = conn.getData("select id_pesanan from pesanan where id_pesanan=" + id_pesanan + ";");
+        
+        try {
+            while(rs.next()) {
+                txtIdPesanan.setEnabled(false);
+                btnTambahItem.setEnabled(true);
+                
+                btnSimpanPesanan.setEnabled(false);
+                btnBatalPesanan.setEnabled(false);
+                tglTerima.setEnabled(true);
+                comboBoxPelanggan.setEnabled(true);
+                comboBoxPegawai.setEnabled(true);
+                comboBoxJenis.setEnabled(true);
+                txtBeratItem.setEnabled(true);
+
+                tglTerima.setDate(null);
+                comboBoxPelanggan.setSelectedIndex(0);
+                comboBoxPegawai.setSelectedIndex(0);
+
+                showTableDetailItem();
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Id pesanan tidak ditemukan: " + e.getMessage());
+                }
+    }//GEN-LAST:event_cekActionPerformed
+
+    private void txtIdPesananKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtIdPesananKeyTyped
+        // TODO add your handling code here:
+        if(!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+            JOptionPane.showMessageDialog(null, "Field id pesanan hanya boleh diisi oleh angka!");
+        }
+    }//GEN-LAST:event_txtIdPesananKeyTyped
 
     /**
      * @param args the command line arguments
@@ -567,15 +805,17 @@ public class PesananBaru extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton baru;
     private javax.swing.JButton btnBatalPesanan;
     private javax.swing.JButton btnSimpanPesanan;
     private javax.swing.JButton btnTambahItem;
+    private javax.swing.JButton cek;
     private javax.swing.JComboBox<String> comboBoxJenis;
     private javax.swing.JComboBox<String> comboBoxPegawai;
     private javax.swing.JComboBox<String> comboBoxPelanggan;
     private javax.swing.JLabel copyright;
+    private javax.swing.JButton existing;
     private javax.swing.JButton jButton1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -594,6 +834,7 @@ public class PesananBaru extends javax.swing.JFrame {
     private javax.swing.JLabel lblTotalBerat1;
     private javax.swing.JPanel pnlCopyright;
     private javax.swing.JTable tblDetailItem;
+    private com.toedter.calendar.JDateChooser tglTerima;
     private javax.swing.JTextField txtBeratItem;
     private javax.swing.JTextField txtHargaItem;
     private javax.swing.JTextField txtIdPesanan;

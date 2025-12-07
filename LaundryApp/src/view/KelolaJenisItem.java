@@ -146,6 +146,11 @@ public class KelolaJenisItem extends javax.swing.JFrame {
                 idActionPerformed(evt);
             }
         });
+        id.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                idKeyTyped(evt);
+            }
+        });
 
         lblNamaItem.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblNamaItem.setText("Nama:");
@@ -484,6 +489,14 @@ public class KelolaJenisItem extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Field harga hanya boleh diisi oleh angka!");
         }
     }//GEN-LAST:event_hargaKeyTyped
+
+    private void idKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idKeyTyped
+        // TODO add your handling code here:
+        if(!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+            JOptionPane.showMessageDialog(null, "Field id item hanya boleh diisi oleh angka!");
+        }
+    }//GEN-LAST:event_idKeyTyped
 
     /**
      * @param args the command line arguments

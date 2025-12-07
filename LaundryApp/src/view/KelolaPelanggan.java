@@ -148,6 +148,12 @@ public class KelolaPelanggan extends javax.swing.JFrame {
         lblIdPelanggan.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblIdPelanggan.setText("ID Pelanggan:");
 
+        txtIdPelanggan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtIdPelangganKeyTyped(evt);
+            }
+        });
+
         lblNamaPelanggan.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         lblNamaPelanggan.setText("Nama:");
 
@@ -512,6 +518,14 @@ public class KelolaPelanggan extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_btnHapusPelangganActionPerformed
+
+    private void txtIdPelangganKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtIdPelangganKeyTyped
+        // TODO add your handling code here:
+        if(!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+            JOptionPane.showMessageDialog(null, "Field id pelanggan hanya boleh diisi oleh angka!");
+        }
+    }//GEN-LAST:event_txtIdPelangganKeyTyped
 
     /**
      * @param args the command line arguments
